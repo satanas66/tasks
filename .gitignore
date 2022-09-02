@@ -1,0 +1,7 @@
+*.class
+*.txt
+*.csv
+*.xlsx
+*.iml
+.idea
+target

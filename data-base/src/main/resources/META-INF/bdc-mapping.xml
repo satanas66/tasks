@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-mappings xmlns="http://java.sun.com/xml/ns/persistence/orm"
+                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                 xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm http://java.sun.com/xml/ns/persistence/orm_1_0.xsd"
+                 version="1.0">
+
+    <persistence-unit-metadata>
+        <persistence-unit-defaults>
+            <schema>PHW_VAC</schema>
+        </persistence-unit-defaults>
+    </persistence-unit-metadata>
+
+    <!--    MUESTRA-MADRE   -->
+    <entity class="jpa.entity.phw_vac.F_Datos_Contacto">
+        <table name="F_DATOS_CONTACTO" schema="PHW_VAC"/>
+    </entity>
+    <entity class="jpa.entity.phw_vac.F_Impago">
+        <table name="F_IMPAGO" schema="PHW_VAC"/>
+    </entity>
+    <entity class="jpa.entity.phw_vac.Gestor_Oportunidades">
+        <table name="GESTOR_OPORTUNIDADES" schema="PHW_VAC"/>
+    </entity>
+
+    <!--    MERCADO-CANDIDATO    -->
+    <entity class="jpa.entity.phw_vac.Estacionalidad_Actv">
+        <table name="ESTACIONALIDAD_ACTV" schema="PHW_VAC"/>
+    </entity>
+
+</entity-mappings>
+

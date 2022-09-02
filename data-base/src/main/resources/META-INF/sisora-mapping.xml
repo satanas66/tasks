@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-mappings xmlns="http://java.sun.com/xml/ns/persistence/orm"
+                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                 xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm http://java.sun.com/xml/ns/persistence/orm_1_0.xsd"
+                 version="1.0">
+
+    <persistence-unit-metadata>
+        <persistence-unit-defaults>
+            <schema>SISORA</schema>
+        </persistence-unit-defaults>
+    </persistence-unit-metadata>
+
+    <!--    MUESTRA-MADRE    -->
+    <entity class="jpa.entity.sisora.Tsi_Sector">
+        <table name="TSI_SECTOR" schema="SISORA"/>
+    </entity>
+
+    <entity class="jpa.entity.sisora.Tsi_Clie">
+        <table name="TSI_CLIE" schema="SISORA"/>
+    </entity>
+
+    <entity class="jpa.entity.sisora.Tsi_Emprvcaract">
+        <table name="TSI_EMPRVCARACT" schema="SISORA"/>
+    </entity>
+
+    <entity class="jpa.entity.sisora.Tsi_Vcaract">
+        <table name="TSI_VCARACT" schema="SISORA"/>
+    </entity>
+
+    <entity class="jpa.entity.sisora.Tsi_Caract">
+        <table name="TSI_CARACT" schema="SISORA"/>
+    </entity>
+
+    <!--    MUESTRA-MADRE Y MERCADO-CANDIDATO    -->
+    <entity class="jpa.entity.sisora.Tsi_F_Web">
+        <table name="TSI_F_WEB" schema="SISORA"/>
+    </entity>
+
+    <entity class="jpa.entity.sisora.Tsi_Actvad">
+        <table name="TSI_ACTVAD" schema="SISORA"/>
+    </entity>
+
+    <!--    MUESTRA-MADRE   -->
+    <entity class="jpa.entity.gestcli_sisora.Tcl_Clie">
+        <table name="TCL_CLIE" schema="SISORA"/>
+    </entity>
+
+    <entity class="jpa.entity.gestcli_sisora.Tcl_Lgcruinfpconex">
+        <table name="TCL_LGCRUINFPCONEX" schema="SISORA"/>
+    </entity>
+
+    <entity class="jpa.entity.gestcli_sisora.Tcl_Pcovinfa">
+        <table name="TCL_PCOVINFA" schema="SISORA"/>
+    </entity>
+
+</entity-mappings>
+

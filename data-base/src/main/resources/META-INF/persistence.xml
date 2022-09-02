@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             version="2.1" xmlns="http://xmlns.jcp.org/xml/ns/persistence"
+             xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
+
+    <persistence-unit name="es.data.master.jpa.persistence.unit.phw_vac" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <mapping-file>META-INF/bdc-mapping.xml</mapping-file>
+        <exclude-unlisted-classes>false</exclude-unlisted-classes>
+    </persistence-unit>
+
+    <persistence-unit name="es.data.master.jpa.persistence.unit.sisora" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <mapping-file>META-INF/sisora-mapping.xml</mapping-file>
+        <exclude-unlisted-classes>false</exclude-unlisted-classes>
+    </persistence-unit>
+
+    <persistence-unit name="es.data.master.jpa.persistence.unit.gestford"
+                      transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <mapping-file>META-INF/gestford-mapping.xml</mapping-file>
+        <exclude-unlisted-classes>false</exclude-unlisted-classes>
+    </persistence-unit>
+
+    <persistence-unit name="es.data.master.jpa.persistence.unit.pa" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <mapping-file>META-INF/pa-mapping.xml</mapping-file>
+        <exclude-unlisted-classes>false</exclude-unlisted-classes>
+    </persistence-unit>
+
+    <persistence-unit name="es.data.master.jpa.persistence.unit.gestcli.sisora" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <mapping-file>META-INF/gestcli-sisora-mapping.xml</mapping-file>
+        <exclude-unlisted-classes>false</exclude-unlisted-classes>
+    </persistence-unit>
+
+</persistence>

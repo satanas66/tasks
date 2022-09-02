@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-mappings xmlns="http://java.sun.com/xml/ns/persistence/orm"
+                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                 xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm http://java.sun.com/xml/ns/persistence/orm_1_0.xsd"
+                 version="1.0">
+
+    <persistence-unit-metadata>
+        <persistence-unit-defaults>
+            <schema>PA</schema>
+        </persistence-unit-defaults>
+    </persistence-unit-metadata>
+
+    <!--    MUESTRA-MADRE    -->
+    <entity class="jpa.entity.pa.Tdv_Oportunidades_Por_Cliente">
+        <table name="tdv_oportunidades_por_cliente" schema="PA"/>
+    </entity>
+    <entity class="jpa.entity.pa.Tdv_Tramo_Historico_Alianza">
+        <table name="tdv_tramo_historico_alianza" schema="PA"/>
+    </entity>
+    <entity class="jpa.entity.pa.Thv_Actividad_Comercial_Cons">
+        <table name="thv_actividad_comercial_cons" schema="PA"/>
+    </entity>
+    <!--    MUESTRA-MADRE Y MERCADO-CANDIDATO    -->
+    <entity class="jpa.entity.pa.Vhv_Cuotas_Mes_V2">
+        <table name="vhv_cuotas_mes_v2" schema="PA"/>
+    </entity>
+
+    <!--    MERCADO-CANDIDATO    -->
+    <entity class="jpa.entity.pa.Vdv_Asignacion_Cuenta_Ec">
+        <table name="vdv_asignacion_cuenta_ec" schema="PA"/>
+    </entity>
+    <entity class="jpa.entity.pa.Tdv_Categoria_Producto">
+        <table name="tdv_categoria_producto" schema="PA"/>
+    </entity>
+    <entity class="jpa.entity.pa.Thv_Actividad_Comercial_Cons_V2">
+        <table name="thv_actividad_comercial_cons_v2" schema="PA"/>
+    </entity>
+    <entity class="jpa.entity.pa.Tdv_Usuario">
+        <table name="tdv_usuario" schema="PA"/>
+    </entity>
+    <entity class="jpa.entity.pa.Tdv_Rol_Usuario">
+        <table name="tdv_rol_usuario" schema="PA"/>
+    </entity>
+    <entity class="jpa.entity.pa.Tdv_Servicio">
+        <table name="tdv_servicio" schema="PA"/>
+    </entity>
+    <entity class="jpa.entity.pa.Tdp_Yext_Localizacion">
+        <table name="tdp_yext_localizacion" schema="PA"/>
+    </entity>
+    <entity class="jpa.entity.pa.Tdp_Yext_Publicacion">
+        <table name="tdp_yext_publicacion" schema="PA"/>
+    </entity>
+
+</entity-mappings>
