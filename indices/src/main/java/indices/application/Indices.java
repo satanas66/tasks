@@ -18,6 +18,9 @@ import javax.persistence.EntityManager;
 import java.io.File;
 import java.util.*;
 
+/**
+ * @author Edwin Patricio Arévalo Angulo
+ */
 public class Indices {
 
     private static Logger LOG = Logger.getLogger(Indices.class);

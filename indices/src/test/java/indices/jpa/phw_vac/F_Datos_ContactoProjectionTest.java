@@ -1,6 +1,5 @@
 package indices.jpa.phw_vac;
 
-import indices.jpa.sisora.Tsi_ActvadProjection;
 import jpa.ConnectionJpa;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -8,7 +7,6 @@ import org.junit.jupiter.api.Test;
 
 import javax.persistence.EntityManager;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 public class F_Datos_ContactoProjectionTest {

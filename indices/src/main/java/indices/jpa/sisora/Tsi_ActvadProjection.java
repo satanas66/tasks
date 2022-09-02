@@ -10,17 +10,14 @@ import javax.persistence.NoResultException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Edwin Patricio Arévalo Angulo
  * <p>
  * Clase encargada de recoger los valores almacenados en la tabla TSI_ACTVAD
  */
-public class Tsi_ActvadProjection {
+public class Tsi_ActvadProjection{
 
     private static Logger LOG = Logger.getLogger(Tsi_ActvadProjection.class);
 

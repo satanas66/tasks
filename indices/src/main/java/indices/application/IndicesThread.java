@@ -9,6 +9,9 @@ import indices.mongo.webVisibilityAnalytics.WebVisibilityAnalyticsProjection;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author Edwin Patricio Arévalo Angulo
+ */
 public class IndicesThread extends Thread {
 
     private static Logger LOG = Logger.getLogger(IndicesThread.class);

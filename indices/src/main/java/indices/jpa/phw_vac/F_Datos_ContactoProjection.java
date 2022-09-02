@@ -4,7 +4,6 @@ import automation.factory.Logger;
 import jpa.BdcMesagge;
 import jpa.entity.phw_vac.F_Datos_Contacto;
 import jpa.metamodel.phw_vac.F_Datos_Contacto_;
-import mongo.WebVisibilityAnalyticsMessage;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -17,7 +16,7 @@ import javax.persistence.criteria.Root;
  *
  * Clase encargada de recoger los valores almacenados en la tabla F_DATOS_CONTACTO
  */
-public class F_Datos_ContactoProjection {
+public class F_Datos_ContactoProjection{
 
     private static Logger LOG = Logger.getLogger(F_Datos_ContactoProjection.class);
 
