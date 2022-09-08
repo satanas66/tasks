@@ -11,15 +11,17 @@ public class IndiceVisibilidad {
 
     private Integer co_actividad;
 
-    private String indiceVisibilidad;
-
     private Integer posicionGMB;
 
     private Integer keywordTop10;
 
-    private Float mediaPosiciónGMB;
+    private Float mediaPosicionGMBBySector;
 
-    private Float mediaKeywordTop10;
+    private Float mediaKeywordTop10BySector;
+
+    private Float mediaPosicionGMBByActvad;
+
+    private Float mediaKeywordTop10ByActvad;
 
     public Integer getCo_cliente() {
         return co_cliente;
@@ -49,6 +51,10 @@ public class IndiceVisibilidad {
         return evaluateVisibility(this.posicionGMB, this.keywordTop10);
     }
 
+    public String getColor(){
+        return evaluateColor(this.posicionGMB, this.keywordTop10);
+    }
+
     public Integer getPosicionGMB() {
         return posicionGMB;
     }
@@ -65,26 +71,42 @@ public class IndiceVisibilidad {
         this.keywordTop10 = keywordTop10;
     }
 
-    public Float getMediaPosiciónGMB() {
-        return mediaPosiciónGMB;
+    public Float getMediaPosicionGMBBySector() {
+        return mediaPosicionGMBBySector;
     }
 
-    public void setMediaPosiciónGMB(Float mediaPosiciónGMB) {
-        this.mediaPosiciónGMB = mediaPosiciónGMB;
+    public void setMediaPosicionGMBBySector(Float mediaPosicionGMBBySector) {
+        this.mediaPosicionGMBBySector = mediaPosicionGMBBySector;
     }
 
-    public Float getMediaKeywordTop10() {
-        return mediaKeywordTop10;
+    public Float getMediaKeywordTop10BySector() {
+        return mediaKeywordTop10BySector;
     }
 
-    public void setMediaKeywordTop10(Float mediaKeywordTop10) {
-        this.mediaKeywordTop10 = mediaKeywordTop10;
+    public void setMediaKeywordTop10BySector(Float mediaKeywordTop10BySector) {
+        this.mediaKeywordTop10BySector = mediaKeywordTop10BySector;
+    }
+
+    public Float getMediaPosicionGMBByActvad() {
+        return mediaPosicionGMBByActvad;
+    }
+
+    public void setMediaPosicionGMBByActvad(Float mediaPosicionGMBByActvad) {
+        this.mediaPosicionGMBByActvad = mediaPosicionGMBByActvad;
+    }
+
+    public Float getMediaKeywordTop10ByActvad() {
+        return mediaKeywordTop10ByActvad;
+    }
+
+    public void setMediaKeywordTop10ByActvad(Float mediaKeywordTop10ByActvad) {
+        this.mediaKeywordTop10ByActvad = mediaKeywordTop10ByActvad;
     }
 
     /**
      * Método que evalua el índice de visibilidad para este objeto
-     * @param kpiSeg303
-     * @param kpiSeg23
+     * @param kpiSeg303, RankingNumber o PositionGMB
+     * @param kpiSeg23, Keyword Top10
      * @return
      */
     private String evaluateVisibility(Integer kpiSeg303, Integer kpiSeg23){
@@ -126,6 +148,51 @@ public class IndiceVisibilidad {
         return null;
     }
 
+    /**
+     * Método que evalua el índice de visibilidad para este objeto
+     * @param kpiSeg303, RankingNumber o PositionGMB
+     * @param kpiSeg23, Keyword Top10
+     * @return
+     */
+    private String evaluateColor(Integer kpiSeg303, Integer kpiSeg23){
+
+        if(kpiSeg303 != null && kpiSeg303 != 999999999){
+            if(kpiSeg303 > 15){
+                return "rojo";
+            }
+            if(kpiSeg303 >= 10 && kpiSeg303 <= 15){
+                return "rojo";
+            }
+            if(kpiSeg303 >= 5 && kpiSeg303 <= 9){
+                return "amarillo";
+            }
+            if(kpiSeg303 >= 3 && kpiSeg303 <= 4){
+                return "amarillo";
+            }
+            if(kpiSeg303 >= 1 && kpiSeg303 <= 2){
+                return "verde";
+            }
+        }
+        if(kpiSeg23 != null && kpiSeg23 != 999999999){
+            if(kpiSeg23 < 2){
+                return "rojo";
+            }
+            if(kpiSeg23 >= 2 && kpiSeg23 <=3){
+                return "rojo";
+            }
+            if(kpiSeg23 >= 4 && kpiSeg23 <= 6){
+                return "amarillo";
+            }
+            if(kpiSeg23 >= 5 && kpiSeg23 <= 8){
+                return "amarillo";
+            }
+            if(kpiSeg23 > 8){
+                return "verde";
+            }
+        }
+        return null;
+    }
+
     public List<Object> getKpisIndicesVisibilidad(){
         List<Object> result = new ArrayList<>();
         result.add(getCo_cliente());
@@ -134,8 +201,11 @@ public class IndiceVisibilidad {
         result.add(getKeywordTop10());
         result.add(getPosicionGMB());
         result.add(getIndiceVisibilidad());
-        result.add(getMediaKeywordTop10());
-        result.add(getMediaPosiciónGMB());
+        result.add(getColor());
+        result.add(getMediaKeywordTop10BySector());
+        result.add(getMediaKeywordTop10ByActvad());
+        result.add(getMediaPosicionGMBBySector());
+        result.add(getMediaPosicionGMBByActvad());
         return result;
     }
 

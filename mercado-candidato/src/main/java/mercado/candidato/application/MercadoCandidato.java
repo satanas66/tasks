@@ -167,7 +167,7 @@ public class MercadoCandidato {
     public void noRelationalDBStart() {
         if (continuaProceso) {
             LOG.info("Abriendo conexión a MONGODB");
-            connectionMongo = new ConnectionMongo();
+            connectionMongo = new ConnectionMongo("PRO");
             if (connectionMongo.getMongoClient() != null) {
                 scrappingDbCollection = connectionMongo.getDBCollection("scrapping");
                 webVisibilityAnalyticsDbCollection = connectionMongo.getDBCollection("webVisibilityAnalytics");

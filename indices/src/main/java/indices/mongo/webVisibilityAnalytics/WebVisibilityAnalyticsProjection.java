@@ -1,11 +1,13 @@
 package indices.mongo.webVisibilityAnalytics;
 
 import automation.factory.Logger;
-import com.mongodb.*;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
 import mongo.WebVisibilityAnalyticsMessage;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -39,7 +41,7 @@ public class WebVisibilityAnalyticsProjection {
 
     /**
      * Método que genera un Array de objeto con todos los valores para los KPIs 303 y 23 que pertenezcan a un código de cliente
-     *
+     * En caso de no encontrar un valor por defecto se añade el 999999999
      * @param clientCode
      * @return projección
      */

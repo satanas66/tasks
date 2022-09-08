@@ -20,7 +20,7 @@ class WebVisibilityAnalyticsProjectionTest {
 
     @BeforeAll
     public static void init(){
-        connectionMongo = new ConnectionMongo();
+        connectionMongo = new ConnectionMongo("PRO");
         dbCollection = connectionMongo.getDBCollection(COLLECTION_NAME);
         webVisibilityAnalyticsProjection = new WebVisibilityAnalyticsProjection(dbCollection);
     }

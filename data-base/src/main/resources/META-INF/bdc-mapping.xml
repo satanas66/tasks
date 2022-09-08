@@ -26,5 +26,10 @@
         <table name="ESTACIONALIDAD_ACTV" schema="PHW_VAC"/>
     </entity>
 
+    <!--    RECURRENT    -->
+    <entity class="jpa.entity.phw_vac.Gestor_Precuentas">
+        <table name="GESTOR_PRECUENTAS" schema="PHW_VAC"/>
+    </entity>
+
 </entity-mappings>
 

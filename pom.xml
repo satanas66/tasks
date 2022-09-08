@@ -16,6 +16,7 @@
         <module>mercado-candidato</module>
         <module>muestra-madre</module>
         <module>indices</module>
+        <module>recurrent</module>
     </modules>
 
     <properties>

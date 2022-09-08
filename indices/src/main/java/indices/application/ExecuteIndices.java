@@ -9,20 +9,21 @@ import java.util.List;
 public class ExecuteIndices {
 
     /**
-     * Previa a la ejecución del proceso se deben obtener los códigos de los clientes a buscar.     *
+     * Previa a la ejecución del proceso se deben obtener los códigos de los clientes a buscar.
+     *
      * @param args
      */
     public static void main(String[] args) {
         Indices indices = new Indices();
         int threadNumber = 10;
 
-//        List<IndicesThread> hilos = instanceThreads(indices, threadNumber);
-//        hilos.forEach(Thread::start);
-//
-//        while (hilos.get(0).isAlive() || hilos.get(1).isAlive() || hilos.get(2).isAlive() ||
-//                hilos.get(3).isAlive() || hilos.get(4).isAlive() || hilos.get(5).isAlive() ||
-//                hilos.get(6).isAlive() || hilos.get(7).isAlive() || hilos.get(8).isAlive() ||
-//                hilos.get(9).isAlive());
+        List<IndicesThread> hilos = instanceThreads(indices, threadNumber);
+        hilos.forEach(Thread::start);
+
+        while (hilos.get(0).isAlive() || hilos.get(1).isAlive() || hilos.get(2).isAlive() ||
+                hilos.get(3).isAlive() || hilos.get(4).isAlive() || hilos.get(5).isAlive() ||
+                hilos.get(6).isAlive() || hilos.get(7).isAlive() || hilos.get(8).isAlive() ||
+                hilos.get(9).isAlive());
 
         indices.searchAndAsociationInformationFromOracle(threadNumber);
         indices.generateFileIndiceVisibilidad(threadNumber);
@@ -31,6 +32,7 @@ public class ExecuteIndices {
 
     /**
      * Método que instancia una una lista con clases IndiceThread para la generación de proyecciones que aglutinan datos desde Oracle y MongoDB
+     *
      * @param indices
      * @param threadNumber
      * @return lista de IndiceThread
@@ -44,8 +46,26 @@ public class ExecuteIndices {
             hilo.instanceOracleProjection(indices.getF_datos_contactoProjection(), indices.getTsi_actvadProjection());
             hilo.instanceMongoProjection(indices.getWebVisibilityAnalyticsProjection());
             hilo.instanceListClientCodes(clientCodes.get(i));
+            hilo.instancePhysycalResource(indices.getMapaRankingNumber());
             result.add(hilo);
         }
+        return result;
+    }
+
+    /**
+     * Método que instancia una una lista con clases IndiceThread para la generación de proyecciones que aglutinan datos desde Oracle y MongoDB
+     *
+     * @param indices
+     * @param threadNumber
+     * @return lista de IndiceThread
+     */
+    public static IndicesThread instanceThread(Indices indices, int threadNumber) {
+        IndicesThread result = new IndicesThread(" Hilo1");
+        result.instancePatameters(indices.PATH, indices.PROYECCION + (1) + indices.EXTENSION);
+        result.instanceOracleProjection(indices.getF_datos_contactoProjection(), indices.getTsi_actvadProjection());
+        result.instanceMongoProjection(indices.getWebVisibilityAnalyticsProjection());
+        result.instanceListClientCodes(indices.listsForExecutionByThreads(threadNumber).get(0));
+        result.instancePhysycalResource(indices.getMapaRankingNumber());
         return result;
     }
 }

@@ -2,6 +2,11 @@ package indices.domain.mapper;
 
 import indices.domain.business.IndiceVisibilidad;
 
+/**
+ * @author Edwin Patricio Arévalo Angulo
+ *
+ * Clase que permite la conversión de un aproyección a una entidad de negocio
+ */
 public class IndicesMapper {
 
     public IndiceVisibilidad getIndiceVisibilidadFromProjection(IndiceVisibilidad indiceVisibilidad, String[] projection){

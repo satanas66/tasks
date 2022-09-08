@@ -2,7 +2,6 @@ package muestra.madre.application;
 
 import automation.factory.Logger;
 import automation.factory.Utils;
-import automation.factory.txt.Text;
 import com.mongodb.DBCollection;
 import jpa.ConnectionJpa;
 import mongo.ConnectionMongo;
@@ -144,7 +143,7 @@ public class MuestraMadre {
     public void noRelationalDBStart() {
         if (continuaProceso) {
             LOG.info("Abriendo conexión a MONGODB");
-            connectionMongo = new ConnectionMongo();
+            connectionMongo = new ConnectionMongo("PRO");
             if (connectionMongo.getMongoClient() != null) {
                 webVisibilityAnalyticsDbCollection = connectionMongo.getDBCollection("webVisibilityAnalytics");
                 bi_RecomendatorCollection = connectionMongo.getDBCollection("bi_Recomendador");

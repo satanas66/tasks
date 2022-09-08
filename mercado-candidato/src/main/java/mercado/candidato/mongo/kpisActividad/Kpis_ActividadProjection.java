@@ -76,5 +76,4 @@ public class Kpis_ActividadProjection {
         }
         return result;
     }
-
 }

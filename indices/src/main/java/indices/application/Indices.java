@@ -9,6 +9,7 @@ import indices.domain.business.IndiceVisibilidad;
 import indices.domain.mapper.IndicesMapper;
 import indices.jpa.phw_vac.F_Datos_ContactoProjection;
 import indices.jpa.sisora.Tsi_ActvadProjection;
+import indices.mongo.scrapping.ScrappingProjection;
 import indices.mongo.webVisibilityAnalytics.WebVisibilityAnalyticsProjection;
 import jpa.ConnectionJpa;
 import jpa.SisoraMessage;
@@ -31,9 +32,13 @@ public class Indices {
 
     protected String EXTENSION = ".csv";
 
+    protected String RANKING_NUMBER = "clientCodes_rankingNumber.csv";
+
     private ConnectionMongo connectionMongo;
 
     private DBCollection webVisibilityAnalyticsDbCollection;
+
+    private DBCollection scrappingDbCollection;
 
     private ConnectionJpa connectionJpa;
 
@@ -47,6 +52,10 @@ public class Indices {
 
     private WebVisibilityAnalyticsProjection webVisibilityAnalyticsProjection;
 
+    private ScrappingProjection scrappingProjection;
+
+    private Map<String, String> mapaRankingNumber;
+
     private boolean continuaProceso = true;
 
     public Indices() {
@@ -54,6 +63,7 @@ public class Indices {
         noRelationalDBStart();
         initOracleProjections();
         initMongoProjections();
+        initPhysycalResource();
     }
 
     public F_Datos_ContactoProjection getF_datos_contactoProjection() {
@@ -66,6 +76,10 @@ public class Indices {
 
     public WebVisibilityAnalyticsProjection getWebVisibilityAnalyticsProjection() {
         return webVisibilityAnalyticsProjection;
+    }
+
+    public Map<String, String> getMapaRankingNumber() {
+        return mapaRankingNumber;
     }
 
     /**
@@ -90,10 +104,11 @@ public class Indices {
      */
     public void noRelationalDBStart() {
         if (continuaProceso) {
-            LOG.info("Abriendo conexión a MONGODB");
-            connectionMongo = new ConnectionMongo();
+            LOG.info("Abriendo conexiones a MONGODB");
+            connectionMongo = new ConnectionMongo("PRO");
             if (connectionMongo.getMongoClient() != null) {
                 webVisibilityAnalyticsDbCollection = connectionMongo.getDBCollection("webVisibilityAnalytics");
+                scrappingDbCollection = connectionMongo.getDBCollection("scrapping");
             } else {
                 continuaProceso = false;
             }
@@ -135,6 +150,22 @@ public class Indices {
     public void initMongoProjections() {
         LOG.info("Instanciado clases projection para realizar las consultas a MongoDB");
         webVisibilityAnalyticsProjection = new WebVisibilityAnalyticsProjection(webVisibilityAnalyticsDbCollection);
+        scrappingProjection = new ScrappingProjection(scrappingDbCollection);
+    }
+
+    /**
+     * Método que instancia los recursos físicos para el email hunter y las actividades a excluir
+     */
+    public void initPhysycalResource() {
+        if (continuaProceso) {
+            List<Object[]> projections;
+            File file = new File(PATH + RANKING_NUMBER);
+            if (!file.exists()) {
+                projections = scrappingProjection.findRankingNumberAndClientCode();
+                Text.generateCsvFileFromObjectProjection(projections, PATH, RANKING_NUMBER);
+            }
+            mapaRankingNumber = Utils.generateMapFromFile(PATH, RANKING_NUMBER);
+        }
     }
 
     public List<List<Integer>> listsForExecutionByThreads(int numberOfDivisions) {
@@ -144,12 +175,14 @@ public class Indices {
     }
 
     /**
-     * Método encargado de buscar el código de sector y de asociarlo a cada línea del fichero proyecciones1.csv
+     * Método encargado de buscar el código de sector y de asociarlo a cada línea del fichero proyecciones.csv
+     * Este paso se realiza para diferenciar los valores vacios en cada línea el csv y de esta forma poder usar
+     * el método split por cada línea y que el array resultante tenga el mismo tamaño.
      */
     public void searchAndAsociationInformationFromOracle(int threadNumber) {
-        LOG.info("INICIO-PASO 2: Buscando los sectores en ORACLE y asociándolos a cada línea del fichero proyecciones1.csv...");
+        LOG.info("INICIO-PASO 2: Buscando los sectores en ORACLE y asociándolos a cada línea del fichero proyecciones.csv...");
         try {
-            if (!new File(PATH, PROYECCION + (threadNumber+1) + EXTENSION).exists()) {
+            if (!new File(PATH, PROYECCION + (threadNumber + 1) + EXTENSION).exists()) {
                 List<String> projectionsPartTwo = new ArrayList<>();
                 List<Object[]> tsi_actvadValues = tsi_actvadProjection.getAllCoActvadGroupByCoSector();
                 Map<String, List<Integer>> mapa = generateMapCoSectorAndCoActvads(tsi_actvadValues);
@@ -176,7 +209,7 @@ public class Indices {
                     }
                     LOG.info("FIN-PASO 2: Se ha generado el fichero proyecciones2.csv correctamente.");
                 }
-                Text.generateTxtFileWithStrings(projectionsPartTwo, PATH, PROYECCION + (threadNumber+1) + EXTENSION);
+                Text.generateTxtFileWithStrings(projectionsPartTwo, PATH, PROYECCION + (threadNumber + 1) + EXTENSION);
             }
         } catch (Exception e) {
             LOG.error(e.getMessage());
@@ -190,42 +223,99 @@ public class Indices {
      */
     public void generateFileIndiceVisibilidad(int threadNumber) {
         try {
-            LOG.info("INICIO-PASO 4: Calculo de las medias para Posición GMB y Keyword Top10 y creación de fichero xlsx.");
             Map<String, List<IndiceVisibilidad>> mapa = getMapaSectoresAndIndiceVisibilidad(threadNumber);
+
+            LOG.info("INICIO-PASO 4: Calculo de las medias para Posición GMB y Keyword Top10 y creación de fichero xlsx.");
             List<List<Object>> totales = new ArrayList<>();
+
             for (String key : mapa.keySet()) {
 
-                    LOG.info("SECTOR: " + key);
-                    List<IndiceVisibilidad> values = mapa.get(key);
-                    int sumaPosicionGMB = 0;
-                    int sumaKeywordTop10 = 0;
-                    int tamPosicionGMB = 0;
-                    int tamKeywordTop10 = 0;
-                    for (IndiceVisibilidad value : values) {
-                        if (!value.getPosicionGMB().equals(999999999)) {
-                            tamPosicionGMB++;
-                            sumaPosicionGMB = sumaPosicionGMB + value.getPosicionGMB();
+                LOG.info("SECTOR: " + key);
+                //Obtengo los Indices para un determinado sector
+                List<IndiceVisibilidad> values = mapa.get(key);
+                // Ordeno los Indices por código de actividad
+                values.sort(Comparator.comparing(IndiceVisibilidad::getCo_actividad).thenComparing(IndiceVisibilidad::getCo_actividad));
+
+                //Obtengo el primer indice
+
+                int sumaPosicionGMBByActvad = 0;
+                int sumaKeywordTop10ByActvad = 0;
+
+                List<IndiceVisibilidad> indices = new ArrayList<>();
+                IndiceVisibilidad primero = values.get(0);
+                indices.add(primero);
+                if (!primero.getPosicionGMB().equals(999999999)) {
+                    sumaPosicionGMBByActvad = sumaPosicionGMBByActvad + primero.getPosicionGMB();
+                }
+                if (!primero.getKeywordTop10().equals(999999999)) {
+                    sumaKeywordTop10ByActvad = sumaKeywordTop10ByActvad + primero.getKeywordTop10();
+                }
+
+                for (int i = 1; i < values.size(); i++) {
+                    //Obtengo el segundo indice
+                    IndiceVisibilidad segundo = values.get(i);
+                    //Evaluo si son iguales
+                    if (primero.getCo_actividad().equals(segundo.getCo_actividad())) {
+                        indices.add(segundo);
+                        if (!segundo.getPosicionGMB().equals(999999999)) {
+                            sumaPosicionGMBByActvad = sumaPosicionGMBByActvad + segundo.getPosicionGMB();
                         }
-                        if (!value.getKeywordTop10().equals(999999999)) {
-                            tamKeywordTop10++;
-                            sumaKeywordTop10 = sumaKeywordTop10 + value.getKeywordTop10();
+                        if (!segundo.getKeywordTop10().equals(999999999)) {
+                            sumaKeywordTop10ByActvad = sumaKeywordTop10ByActvad + segundo.getKeywordTop10();
+                        }
+
+                    } else {
+                        float mediaPosicionGMBByActvad = (float) sumaPosicionGMBByActvad / indices.size();
+                        float mediaKeywordTop10ByActvad = (float) sumaKeywordTop10ByActvad / indices.size();
+                        indices.forEach(indice -> {
+                            indice.setMediaPosicionGMBByActvad(mediaPosicionGMBByActvad);
+                            indice.setMediaKeywordTop10ByActvad(mediaKeywordTop10ByActvad);
+                        });
+                        sumaPosicionGMBByActvad = 0;
+                        sumaKeywordTop10ByActvad = 0;
+                        primero = values.get(i);
+                        indices = new ArrayList<>();
+                        indices.add(primero);
+                        if (!primero.getPosicionGMB().equals(999999999)) {
+                            sumaPosicionGMBByActvad = sumaPosicionGMBByActvad + primero.getPosicionGMB();
+                        }
+                        if (!primero.getKeywordTop10().equals(999999999)) {
+                            sumaKeywordTop10ByActvad = sumaKeywordTop10ByActvad + primero.getKeywordTop10();
                         }
                     }
-                    float mediaPosicionGMB = (float) sumaPosicionGMB / tamPosicionGMB;
-                    float mediaKeywordTop10 = (float) sumaKeywordTop10 / tamKeywordTop10;
-                    LOG.info("INTERMEDIO-PASO 4: Asociación de las medias a cada objeto IndiceVisibilidad..");
-                    //Aquí añado las medias calculadas a cada objeto
-                    for (IndiceVisibilidad value : values) {
-                        if (value.getPosicionGMB().equals(999999999)) {
-                            value.setPosicionGMB(null);
-                        }
-                        if (value.getKeywordTop10().equals(999999999)) {
-                            value.setKeywordTop10(null);
-                        }
-                        value.setMediaPosiciónGMB(mediaPosicionGMB);
-                        value.setMediaKeywordTop10(mediaKeywordTop10);
-                        totales.add(value.getKpisIndicesVisibilidad());
+                }
+
+                int sumaPosicionGMB = 0;
+                int sumaKeywordTop10 = 0;
+                int tamPosicionGMB = 0;
+                int tamKeywordTop10 = 0;
+
+                for (IndiceVisibilidad value : values) {
+                    if (!value.getPosicionGMB().equals(999999999)) {
+                        tamPosicionGMB++;
+                        sumaPosicionGMB = sumaPosicionGMB + value.getPosicionGMB();
                     }
+                    if (!value.getKeywordTop10().equals(999999999)) {
+                        tamKeywordTop10++;
+                        sumaKeywordTop10 = sumaKeywordTop10 + value.getKeywordTop10();
+                    }
+                }
+                float mediaPosicionGMB = (float) sumaPosicionGMB / tamPosicionGMB;
+                float mediaKeywordTop10 = (float) sumaKeywordTop10 / tamKeywordTop10;
+
+                LOG.info("INTERMEDIO-PASO 4: Asociación de las medias a cada objeto IndiceVisibilidad..");
+                //Aquí añado las medias calculadas a cada objeto
+                for (IndiceVisibilidad value : values) {
+                    if (value.getPosicionGMB().equals(999999999)) {
+                        value.setPosicionGMB(null);
+                    }
+                    if (value.getKeywordTop10().equals(999999999)) {
+                        value.setKeywordTop10(null);
+                    }
+                    value.setMediaPosicionGMBBySector(mediaPosicionGMB);
+                    value.setMediaKeywordTop10BySector(mediaKeywordTop10);
+                    totales.add(value.getKpisIndicesVisibilidad());
+                }
 
             }
             LOG.info("FIN-PASO 4: Escribiendo resultados en fichero INDICES_VISIBILIDAD.xlsx");
@@ -244,7 +334,7 @@ public class Indices {
         Map<String, List<IndiceVisibilidad>> mapa = new LinkedHashMap<>();
         try {
             LOG.info("INICIO-PASO 3: Generando los objetos IndiceVisibilidad...");
-            List<String> projections = Utils.generateListFromFile(PATH, PROYECCION+(threadNumber+1)+EXTENSION);
+            List<String> projections = Utils.generateListFromFile(PATH, PROYECCION + (threadNumber + 1) + EXTENSION);
             IndicesMapper indicesMapper = new IndicesMapper();
 
             for (int i = 0; i < projections.size(); i++) {
@@ -312,7 +402,62 @@ public class Indices {
      */
     private List<String> getKPIsIndiceVisibilidad() {
         return Arrays.asList("CO_CLIENTE", "CO_SECTOR", "CO_ACTVAD",
-                "KEYWORDS_TOP10", "POSICION_GMB", "VISIBILIDAD",
-                "MEDIA_KEYWORDS_TOP10_BY_SECTOR", "MEDIA_POSICION_GMB_BY_SECTOR");
+                "KEYWORDS_TOP10", "POSICION_GMB", "VISIBILIDAD", "COLOR",
+                "MEDIA_KEYWORDS_TOP10_BY_SECTOR", "MEDIA_KEYWORDS_TOP10_BY_ACTVAD", "MEDIA_POSICION_GMB_BY_SECTOR", "MEDIA_POSICION_GMB_BY_ACTVAD");
+    }
+
+
+    /**
+     * Método encargado de calcular las medias por sector para posición GMB y keyword top10.
+     * Una vez calculadas las mediar se procede a la construcción de objetos java IndiceVisibilidad
+     * para así generar un fichero xlsx con los resultados.
+     */
+    public void generateFileIndiceVisibilidadAUX(int threadNumber) {
+        try {
+            Map<String, List<IndiceVisibilidad>> mapa = getMapaSectoresAndIndiceVisibilidad(threadNumber);
+
+            LOG.info("INICIO-PASO 4: Calculo de las medias para Posición GMB y Keyword Top10 y creación de fichero xlsx.");
+            List<List<Object>> totales = new ArrayList<>();
+            for (String key : mapa.keySet()) {
+
+                LOG.info("SECTOR: " + key);
+                List<IndiceVisibilidad> values = mapa.get(key);
+                values.sort(Comparator.comparing(IndiceVisibilidad::getCo_actividad).thenComparing(IndiceVisibilidad::getCo_actividad));
+                int sumaPosicionGMB = 0;
+                int sumaKeywordTop10 = 0;
+                int tamPosicionGMB = 0;
+                int tamKeywordTop10 = 0;
+
+                for (IndiceVisibilidad value : values) {
+                    if (!value.getPosicionGMB().equals(999999999)) {
+                        tamPosicionGMB++;
+                        sumaPosicionGMB = sumaPosicionGMB + value.getPosicionGMB();
+                    }
+                    if (!value.getKeywordTop10().equals(999999999)) {
+                        tamKeywordTop10++;
+                        sumaKeywordTop10 = sumaKeywordTop10 + value.getKeywordTop10();
+                    }
+                }
+                float mediaPosicionGMB = (float) sumaPosicionGMB / tamPosicionGMB;
+                float mediaKeywordTop10 = (float) sumaKeywordTop10 / tamKeywordTop10;
+                LOG.info("INTERMEDIO-PASO 4: Asociación de las medias a cada objeto IndiceVisibilidad..");
+
+                for (IndiceVisibilidad value : values) {
+                    if (value.getPosicionGMB().equals(999999999)) {
+                        value.setPosicionGMB(null);
+                    }
+                    if (value.getKeywordTop10().equals(999999999)) {
+                        value.setKeywordTop10(null);
+                    }
+                    value.setMediaPosicionGMBBySector(mediaPosicionGMB);
+                    value.setMediaKeywordTop10BySector(mediaKeywordTop10);
+                    totales.add(value.getKpisIndicesVisibilidad());
+                }
+            }
+            LOG.info("FIN-PASO 4: Escribiendo resultados en fichero INDICES_VISIBILIDAD.xlsx");
+            Excel.writeKPIsAllValues(PATH, "INDICES_VISIBILIDAD.xlsx", totales, getKPIsIndiceVisibilidad());
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+        }
     }
 }

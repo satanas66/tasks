@@ -29,8 +29,12 @@ public class ConnectionMongo {
     /**
      * Constructor en el que se
      */
-    public ConnectionMongo(){
-        getPropertiesDB();
+    public ConnectionMongo(String entorno){
+        if("PRO".equalsIgnoreCase(entorno)){
+            getPropertiesDB();
+        }else{
+            getPropertiesDBDES();
+        }
         setMongoClient();
     }
 
@@ -47,6 +51,17 @@ public class ConnectionMongo {
         this.mongoPort =  System.getenv().get("MONGO_PORT");
         this.mongoUser = System.getenv().get("MONGO_USER");
         this.mongoPassword = System.getenv().get("MONGO_PASSWORD");
+    }
+
+    /**
+     * Método que recoge los valores almacenados en las variables de entorno para realizar las conexiones a la base de datos
+     */
+    private void getPropertiesDBDES(){
+        this.mongoDB = System.getenv().get("MONGO_DB_DES");
+        this.mongoHost =  System.getenv().get("MONGO_HOST_DES");
+        this.mongoPort =  System.getenv().get("MONGO_PORT_DES");
+        this.mongoUser = System.getenv().get("MONGO_USER_DES");
+        this.mongoPassword = System.getenv().get("MONGO_PASSWORD_DES");
     }
 
     /**

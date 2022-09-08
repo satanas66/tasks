@@ -8,6 +8,7 @@ import indices.mongo.webVisibilityAnalytics.WebVisibilityAnalyticsProjection;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Edwin Patricio Arévalo Angulo
@@ -28,6 +29,7 @@ public class IndicesThread extends Thread {
 
     private WebVisibilityAnalyticsProjection webVisibilityAnalyticsProjection;
 
+    private Map<String, String> mapaRankingNumber;
 
     public IndicesThread(String nombreHilo) {
         super(nombreHilo);
@@ -36,6 +38,10 @@ public class IndicesThread extends Thread {
     public void instancePatameters(String path, String nameFile) {
         this.path = path;
         this.nameFile = nameFile;
+    }
+
+    public void instancePhysycalResource(Map<String, String> mapaRankingNumber) {
+        this.mapaRankingNumber = mapaRankingNumber;
     }
 
     public void instanceListClientCodes(List<Integer> clientCodes) {
@@ -59,7 +65,7 @@ public class IndicesThread extends Thread {
 
     /**
      * Método encargado de buscar el código de actividad, valor de la posición GMB, Número de keyword en Top10 para la posterior
-     *  construcción de un fichero csv que aglutine todos los resultados.
+     *  construcción de un fichero csv que aglutinará todos los resultados.
      *  Por cada línea se escribirá en el siguiente orden => CO_CLIENTE, CO_ACTIVIDAD, KEYWORD_TOP10, POSICION_GMB
      */
     private void searchInformationFromOracleAndMongoDB() {
@@ -72,6 +78,9 @@ public class IndicesThread extends Thread {
                     Integer co_actvad = (f_datos_contactoValues[1] != null) ? (Integer) f_datos_contactoValues[1] : 999999999;
                     Object[] webVisibilityAnalyticsValues = webVisibilityAnalyticsProjection.getKpis303And23FromWebVisibilityAnalytics(String.valueOf(clientCode));
                     String cadena = clientCode + "," + co_actvad + "," + webVisibilityAnalyticsValues[0] + "," + webVisibilityAnalyticsValues[1];
+                    if(webVisibilityAnalyticsValues[1].equals(999999999) && null != mapaRankingNumber.get(clientCode)){
+                        cadena = clientCode + "," + co_actvad + "," + webVisibilityAnalyticsValues[0] + "," + mapaRankingNumber.get(clientCode);
+                    }
                     values.add(cadena);
                 }
             } catch (Exception e) {

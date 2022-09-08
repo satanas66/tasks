@@ -5,8 +5,6 @@ import mongo.ConnectionMongo;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 
@@ -22,7 +20,7 @@ public class WebVisibilityAnalyticsProjectionTest {
 
     @BeforeAll
     public static void init(){
-        connectionMongo = new ConnectionMongo();
+        connectionMongo = new ConnectionMongo("PRO");
         dbCollection = connectionMongo.getDBCollection(COLLECTION_NAME);
         webVisibilityAnalyticsProjection = new WebVisibilityAnalyticsProjection(dbCollection);
     }
