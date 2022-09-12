@@ -14,9 +14,10 @@
         <module>messages</module>
         <module>data-base</module>
         <module>mercado-candidato</module>
-        <module>muestra-madre</module>
+        <module>mercado-potencial</module>
         <module>indices</module>
         <module>recurrent</module>
+        <module>source-audit</module>
     </modules>
 
     <properties>
@@ -26,6 +27,9 @@
 
         <junit.version>5.7.2</junit.version>
         <assertj.version>3.20.2</assertj.version>
+
+        <lombok.version>1.18.24</lombok.version>
+        <automation.version>1.0.0</automation.version>
     </properties>
 
     <dependencies>
@@ -33,7 +37,13 @@
         <dependency>
             <groupId>automation.factory</groupId>
             <artifactId>automation-factory</artifactId>
-            <version>1.0.0</version>
+            <version>${automation.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
         </dependency>
 
         <dependency>

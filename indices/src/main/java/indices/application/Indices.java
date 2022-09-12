@@ -52,9 +52,7 @@ public class Indices {
 
     private WebVisibilityAnalyticsProjection webVisibilityAnalyticsProjection;
 
-    private ScrappingProjection scrappingProjection;
-
-    private Map<String, String> mapaRankingNumber;
+    private List<List<Object>> totales = new ArrayList<>();
 
     private boolean continuaProceso = true;
 
@@ -63,7 +61,6 @@ public class Indices {
         noRelationalDBStart();
         initOracleProjections();
         initMongoProjections();
-        initPhysycalResource();
     }
 
     public F_Datos_ContactoProjection getF_datos_contactoProjection() {
@@ -76,10 +73,6 @@ public class Indices {
 
     public WebVisibilityAnalyticsProjection getWebVisibilityAnalyticsProjection() {
         return webVisibilityAnalyticsProjection;
-    }
-
-    public Map<String, String> getMapaRankingNumber() {
-        return mapaRankingNumber;
     }
 
     /**
@@ -108,7 +101,6 @@ public class Indices {
             connectionMongo = new ConnectionMongo("PRO");
             if (connectionMongo.getMongoClient() != null) {
                 webVisibilityAnalyticsDbCollection = connectionMongo.getDBCollection("webVisibilityAnalytics");
-                scrappingDbCollection = connectionMongo.getDBCollection("scrapping");
             } else {
                 continuaProceso = false;
             }
@@ -150,22 +142,6 @@ public class Indices {
     public void initMongoProjections() {
         LOG.info("Instanciado clases projection para realizar las consultas a MongoDB");
         webVisibilityAnalyticsProjection = new WebVisibilityAnalyticsProjection(webVisibilityAnalyticsDbCollection);
-        scrappingProjection = new ScrappingProjection(scrappingDbCollection);
-    }
-
-    /**
-     * Método que instancia los recursos físicos para el email hunter y las actividades a excluir
-     */
-    public void initPhysycalResource() {
-        if (continuaProceso) {
-            List<Object[]> projections;
-            File file = new File(PATH + RANKING_NUMBER);
-            if (!file.exists()) {
-                projections = scrappingProjection.findRankingNumberAndClientCode();
-                Text.generateCsvFileFromObjectProjection(projections, PATH, RANKING_NUMBER);
-            }
-            mapaRankingNumber = Utils.generateMapFromFile(PATH, RANKING_NUMBER);
-        }
     }
 
     public List<List<Integer>> listsForExecutionByThreads(int numberOfDivisions) {
@@ -191,11 +167,8 @@ public class Indices {
                     if (projectionsPartOne != null && projectionsPartOne.size() > 0 && mapa.size() > 0) {
                         for (String proyeccion : projectionsPartOne) {
                             String[] array = proyeccion.split(",");
-                            Integer co_actvad = Integer.parseInt(array[1]);
-                            if (co_actvad.equals(999999999)) {
-                                String value = proyeccion + "," + 999999999;
-                                projectionsPartTwo.add(value);
-                            } else {
+                            if(!"null".equals(array[1])){
+                                Integer co_actvad = Integer.parseInt(array[1]);
                                 for (String co_sector : mapa.keySet()) {
                                     List<Integer> listActvad = mapa.get(co_sector);
                                     if (listActvad.contains(co_actvad)) {
@@ -218,106 +191,76 @@ public class Indices {
 
     /**
      * Método encargado de calcular las medias por sector para posición GMB y keyword top10.
-     * Una vez calculadas las mediar se procede a la construcción de objetos java IndiceVisibilidad
-     * para así generar un fichero xlsx con los resultados.
      */
-    public void generateFileIndiceVisibilidad(int threadNumber) {
+    public List<List<Object>> calculatingAveragesBySector(int threadNumber) {
         try {
-            Map<String, List<IndiceVisibilidad>> mapa = getMapaSectoresAndIndiceVisibilidad(threadNumber);
-
             LOG.info("INICIO-PASO 4: Calculo de las medias para Posición GMB y Keyword Top10 y creación de fichero xlsx.");
-            List<List<Object>> totales = new ArrayList<>();
-
+            Map<String, List<IndiceVisibilidad>> mapa = getMapaSectoresAndIndiceVisibilidad(threadNumber);
             for (String key : mapa.keySet()) {
-
                 LOG.info("SECTOR: " + key);
                 //Obtengo los Indices para un determinado sector
                 List<IndiceVisibilidad> values = mapa.get(key);
                 // Ordeno los Indices por código de actividad
                 values.sort(Comparator.comparing(IndiceVisibilidad::getCo_actividad).thenComparing(IndiceVisibilidad::getCo_actividad));
-
-                //Obtengo el primer indice
-
+                //Obtengo el primer indice para sumar el ranking number por actividad
                 int sumaPosicionGMBByActvad = 0;
                 int sumaKeywordTop10ByActvad = 0;
-
                 List<IndiceVisibilidad> indices = new ArrayList<>();
                 IndiceVisibilidad primero = values.get(0);
                 indices.add(primero);
-                if (!primero.getPosicionGMB().equals(999999999)) {
+                if (primero.getPosicionGMB() != null) {
                     sumaPosicionGMBByActvad = sumaPosicionGMBByActvad + primero.getPosicionGMB();
                 }
-                if (!primero.getKeywordTop10().equals(999999999)) {
+                if (primero.getKeywordTop10() != null) {
                     sumaKeywordTop10ByActvad = sumaKeywordTop10ByActvad + primero.getKeywordTop10();
                 }
-
                 for (int i = 1; i < values.size(); i++) {
                     //Obtengo el segundo indice
                     IndiceVisibilidad segundo = values.get(i);
                     //Evaluo si son iguales
                     if (primero.getCo_actividad().equals(segundo.getCo_actividad())) {
                         indices.add(segundo);
-                        if (!segundo.getPosicionGMB().equals(999999999)) {
+                        if (segundo.getPosicionGMB() != null) {
                             sumaPosicionGMBByActvad = sumaPosicionGMBByActvad + segundo.getPosicionGMB();
                         }
-                        if (!segundo.getKeywordTop10().equals(999999999)) {
+                        if (segundo.getKeywordTop10() != null) {
                             sumaKeywordTop10ByActvad = sumaKeywordTop10ByActvad + segundo.getKeywordTop10();
                         }
-
                     } else {
                         float mediaPosicionGMBByActvad = (float) sumaPosicionGMBByActvad / indices.size();
                         float mediaKeywordTop10ByActvad = (float) sumaKeywordTop10ByActvad / indices.size();
                         indices.forEach(indice -> {
                             indice.setMediaPosicionGMBByActvad(mediaPosicionGMBByActvad);
                             indice.setMediaKeywordTop10ByActvad(mediaKeywordTop10ByActvad);
+                            totales.add(indice.getKpisIndicesVisibilidad());
                         });
                         sumaPosicionGMBByActvad = 0;
                         sumaKeywordTop10ByActvad = 0;
                         primero = values.get(i);
                         indices = new ArrayList<>();
                         indices.add(primero);
-                        if (!primero.getPosicionGMB().equals(999999999)) {
+                        if (primero.getPosicionGMB() != null) {
                             sumaPosicionGMBByActvad = sumaPosicionGMBByActvad + primero.getPosicionGMB();
                         }
-                        if (!primero.getKeywordTop10().equals(999999999)) {
+                        if (primero.getKeywordTop10() != null) {
                             sumaKeywordTop10ByActvad = sumaKeywordTop10ByActvad + primero.getKeywordTop10();
                         }
                     }
                 }
-
-                int sumaPosicionGMB = 0;
-                int sumaKeywordTop10 = 0;
-                int tamPosicionGMB = 0;
-                int tamKeywordTop10 = 0;
-
-                for (IndiceVisibilidad value : values) {
-                    if (!value.getPosicionGMB().equals(999999999)) {
-                        tamPosicionGMB++;
-                        sumaPosicionGMB = sumaPosicionGMB + value.getPosicionGMB();
-                    }
-                    if (!value.getKeywordTop10().equals(999999999)) {
-                        tamKeywordTop10++;
-                        sumaKeywordTop10 = sumaKeywordTop10 + value.getKeywordTop10();
-                    }
-                }
-                float mediaPosicionGMB = (float) sumaPosicionGMB / tamPosicionGMB;
-                float mediaKeywordTop10 = (float) sumaKeywordTop10 / tamKeywordTop10;
-
-                LOG.info("INTERMEDIO-PASO 4: Asociación de las medias a cada objeto IndiceVisibilidad..");
-                //Aquí añado las medias calculadas a cada objeto
-                for (IndiceVisibilidad value : values) {
-                    if (value.getPosicionGMB().equals(999999999)) {
-                        value.setPosicionGMB(null);
-                    }
-                    if (value.getKeywordTop10().equals(999999999)) {
-                        value.setKeywordTop10(null);
-                    }
-                    value.setMediaPosicionGMBBySector(mediaPosicionGMB);
-                    value.setMediaKeywordTop10BySector(mediaKeywordTop10);
-                    totales.add(value.getKpisIndicesVisibilidad());
-                }
-
             }
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+        }
+        return totales;
+    }
+
+    /**
+     * Una vez calculadas las mediar se procede a la construcción de objetos java IndiceVisibilidad
+     * para así generar un fichero xlsx con los resultados.
+     */
+    public void generateFileIndiceVisibilidad() {
+        try {
+
             LOG.info("FIN-PASO 4: Escribiendo resultados en fichero INDICES_VISIBILIDAD.xlsx");
             Excel.writeKPIsAllValues(PATH, "INDICES_VISIBILIDAD.xlsx", totales, getKPIsIndiceVisibilidad());
         } catch (Exception e) {
@@ -403,61 +346,6 @@ public class Indices {
     private List<String> getKPIsIndiceVisibilidad() {
         return Arrays.asList("CO_CLIENTE", "CO_SECTOR", "CO_ACTVAD",
                 "KEYWORDS_TOP10", "POSICION_GMB", "VISIBILIDAD", "COLOR",
-                "MEDIA_KEYWORDS_TOP10_BY_SECTOR", "MEDIA_KEYWORDS_TOP10_BY_ACTVAD", "MEDIA_POSICION_GMB_BY_SECTOR", "MEDIA_POSICION_GMB_BY_ACTVAD");
-    }
-
-
-    /**
-     * Método encargado de calcular las medias por sector para posición GMB y keyword top10.
-     * Una vez calculadas las mediar se procede a la construcción de objetos java IndiceVisibilidad
-     * para así generar un fichero xlsx con los resultados.
-     */
-    public void generateFileIndiceVisibilidadAUX(int threadNumber) {
-        try {
-            Map<String, List<IndiceVisibilidad>> mapa = getMapaSectoresAndIndiceVisibilidad(threadNumber);
-
-            LOG.info("INICIO-PASO 4: Calculo de las medias para Posición GMB y Keyword Top10 y creación de fichero xlsx.");
-            List<List<Object>> totales = new ArrayList<>();
-            for (String key : mapa.keySet()) {
-
-                LOG.info("SECTOR: " + key);
-                List<IndiceVisibilidad> values = mapa.get(key);
-                values.sort(Comparator.comparing(IndiceVisibilidad::getCo_actividad).thenComparing(IndiceVisibilidad::getCo_actividad));
-                int sumaPosicionGMB = 0;
-                int sumaKeywordTop10 = 0;
-                int tamPosicionGMB = 0;
-                int tamKeywordTop10 = 0;
-
-                for (IndiceVisibilidad value : values) {
-                    if (!value.getPosicionGMB().equals(999999999)) {
-                        tamPosicionGMB++;
-                        sumaPosicionGMB = sumaPosicionGMB + value.getPosicionGMB();
-                    }
-                    if (!value.getKeywordTop10().equals(999999999)) {
-                        tamKeywordTop10++;
-                        sumaKeywordTop10 = sumaKeywordTop10 + value.getKeywordTop10();
-                    }
-                }
-                float mediaPosicionGMB = (float) sumaPosicionGMB / tamPosicionGMB;
-                float mediaKeywordTop10 = (float) sumaKeywordTop10 / tamKeywordTop10;
-                LOG.info("INTERMEDIO-PASO 4: Asociación de las medias a cada objeto IndiceVisibilidad..");
-
-                for (IndiceVisibilidad value : values) {
-                    if (value.getPosicionGMB().equals(999999999)) {
-                        value.setPosicionGMB(null);
-                    }
-                    if (value.getKeywordTop10().equals(999999999)) {
-                        value.setKeywordTop10(null);
-                    }
-                    value.setMediaPosicionGMBBySector(mediaPosicionGMB);
-                    value.setMediaKeywordTop10BySector(mediaKeywordTop10);
-                    totales.add(value.getKpisIndicesVisibilidad());
-                }
-            }
-            LOG.info("FIN-PASO 4: Escribiendo resultados en fichero INDICES_VISIBILIDAD.xlsx");
-            Excel.writeKPIsAllValues(PATH, "INDICES_VISIBILIDAD.xlsx", totales, getKPIsIndiceVisibilidad());
-        } catch (Exception e) {
-            LOG.error(e.getMessage());
-        }
+                "MEDIA_KEYWORDS_TOP10_BY_ACTVAD", "MEDIA_POSICION_GMB_BY_ACTVAD");
     }
 }

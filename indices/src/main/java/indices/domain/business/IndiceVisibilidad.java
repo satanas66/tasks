@@ -15,10 +15,6 @@ public class IndiceVisibilidad {
 
     private Integer keywordTop10;
 
-    private Float mediaPosicionGMBBySector;
-
-    private Float mediaKeywordTop10BySector;
-
     private Float mediaPosicionGMBByActvad;
 
     private Float mediaKeywordTop10ByActvad;
@@ -69,22 +65,6 @@ public class IndiceVisibilidad {
 
     public void setKeywordTop10(Integer keywordTop10) {
         this.keywordTop10 = keywordTop10;
-    }
-
-    public Float getMediaPosicionGMBBySector() {
-        return mediaPosicionGMBBySector;
-    }
-
-    public void setMediaPosicionGMBBySector(Float mediaPosicionGMBBySector) {
-        this.mediaPosicionGMBBySector = mediaPosicionGMBBySector;
-    }
-
-    public Float getMediaKeywordTop10BySector() {
-        return mediaKeywordTop10BySector;
-    }
-
-    public void setMediaKeywordTop10BySector(Float mediaKeywordTop10BySector) {
-        this.mediaKeywordTop10BySector = mediaKeywordTop10BySector;
     }
 
     public Float getMediaPosicionGMBByActvad() {
@@ -202,9 +182,7 @@ public class IndiceVisibilidad {
         result.add(getPosicionGMB());
         result.add(getIndiceVisibilidad());
         result.add(getColor());
-        result.add(getMediaKeywordTop10BySector());
         result.add(getMediaKeywordTop10ByActvad());
-        result.add(getMediaPosicionGMBBySector());
         result.add(getMediaPosicionGMBByActvad());
         return result;
     }

@@ -48,12 +48,43 @@
             <artifactId>message</artifactId>
             <version>1.0.0</version>
         </dependency>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>RELEASE</version>
-            <scope>compile</scope>
-        </dependency>
     </dependencies>
+
+<!--    <build>-->
+<!--        <plugins>-->
+<!--            <plugin>-->
+<!--                <groupId>org.bsc.maven</groupId>-->
+<!--                <artifactId>maven-processor-plugin</artifactId>-->
+<!--                <version>4.0-jdk8</version>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <id>eclipselink-jpa-metamodel</id>-->
+<!--                        <goals>-->
+<!--                            <goal>process</goal>-->
+<!--                        </goals>-->
+<!--                        <phase>generate-sources</phase>-->
+<!--                        <configuration>-->
+<!--                            <compilerArguments>-->
+<!--                                -Aeclipselink.persistencexml=C:\tasks\data-base\src\main\resources\META-INF\persistence.xml-->
+<!--                            </compilerArguments>-->
+<!--                            <processors>-->
+<!--                                <processor>org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProcessor-->
+<!--                                </processor>-->
+<!--                            </processors>-->
+<!--                            <outputDirectory>${project.build.directory}/generated-sources/meta-model</outputDirectory>-->
+<!--                        </configuration>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--                <dependencies>-->
+<!--                    <dependency>-->
+<!--                        <groupId>org.eclipse.persistence</groupId>-->
+<!--                        <artifactId>org.eclipse.persistence.jpa.modelgen.processor</artifactId>-->
+<!--                        <version>2.7.7</version>-->
+<!--                        <scope>compile</scope>-->
+<!--                    </dependency>-->
+<!--                </dependencies>-->
+<!--            </plugin>-->
+<!--        </plugins>-->
+<!--    </build>-->
 
 </project>

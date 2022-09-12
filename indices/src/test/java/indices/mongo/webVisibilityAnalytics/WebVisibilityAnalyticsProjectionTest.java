@@ -37,4 +37,22 @@ public class WebVisibilityAnalyticsProjectionTest {
         assertThat(result[0]).isEqualTo(9);
         assertThat(result[1]).isEqualTo(null);
     }
+
+    @Test
+    public void getErroresSeo() {
+        Object[] result = webVisibilityAnalyticsProjection.getErroresSeo("270898513");
+        assertThat(result).isNotNull();
+        assertThat(result.length).isNotZero().isEqualTo(13);
+    }
+
+//    public Integer calculateErroresSeo(String clientCode){
+//        Object[] projection = getErroresSeo(clientCode);
+//        Integer result = 0;
+//        for(int i=0; i < projection.length; i++){
+//            if(projection[i] != null){
+//                result++;
+//            }
+//        }
+//        return result;
+//    }
 }

@@ -16,7 +16,6 @@ import java.util.Date;
 public class Gestor_Oportunidades {
     @Id
     @Column(name = "ID_GESTOR")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id_gestor;
 
     @Column(name = "CO_CLIENTE", nullable=false)

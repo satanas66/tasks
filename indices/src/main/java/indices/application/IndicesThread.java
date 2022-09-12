@@ -29,8 +29,6 @@ public class IndicesThread extends Thread {
 
     private WebVisibilityAnalyticsProjection webVisibilityAnalyticsProjection;
 
-    private Map<String, String> mapaRankingNumber;
-
     public IndicesThread(String nombreHilo) {
         super(nombreHilo);
     }
@@ -38,10 +36,6 @@ public class IndicesThread extends Thread {
     public void instancePatameters(String path, String nameFile) {
         this.path = path;
         this.nameFile = nameFile;
-    }
-
-    public void instancePhysycalResource(Map<String, String> mapaRankingNumber) {
-        this.mapaRankingNumber = mapaRankingNumber;
     }
 
     public void instanceListClientCodes(List<Integer> clientCodes) {
@@ -73,14 +67,10 @@ public class IndicesThread extends Thread {
         List<String> values = new ArrayList<>();
         for (Integer clientCode : clientCodes) {
             try {
-                Object[] f_datos_contactoValues = f_datos_contactoProjection.findActivityCodeByclientCode(clientCode);
-                if (f_datos_contactoValues != null) {
-                    Integer co_actvad = (f_datos_contactoValues[1] != null) ? (Integer) f_datos_contactoValues[1] : 999999999;
+                Integer co_actvad = f_datos_contactoProjection.findActivityCodeByclientCode(clientCode);
+                if (co_actvad != null) {
                     Object[] webVisibilityAnalyticsValues = webVisibilityAnalyticsProjection.getKpis303And23FromWebVisibilityAnalytics(String.valueOf(clientCode));
                     String cadena = clientCode + "," + co_actvad + "," + webVisibilityAnalyticsValues[0] + "," + webVisibilityAnalyticsValues[1];
-                    if(webVisibilityAnalyticsValues[1].equals(999999999) && null != mapaRankingNumber.get(clientCode)){
-                        cadena = clientCode + "," + co_actvad + "," + webVisibilityAnalyticsValues[0] + "," + mapaRankingNumber.get(clientCode);
-                    }
                     values.add(cadena);
                 }
             } catch (Exception e) {

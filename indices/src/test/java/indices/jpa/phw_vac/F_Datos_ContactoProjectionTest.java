@@ -31,7 +31,7 @@ public class F_Datos_ContactoProjectionTest {
 
     @Test
     public void findActivityCodeByclientCode() {
-        Object[] result = f_datos_contactoProjection.findActivityCodeByclientCode(213382476);
-        assertThat(result.length).isNotNull().isEqualTo(2);
+        Integer result = f_datos_contactoProjection.findActivityCodeByclientCode(213382476);
+        assertThat(result).isNotNull();
     }
 }

@@ -33,7 +33,32 @@ public class F_Datos_ContactoProjection{
      * @param clientCode
      * @return proyección
      */
-    public Object[] findActivityCodeByclientCode(Integer clientCode) {
+    public Integer findActivityCodeByclientCode(Integer clientCode) {
+        Integer result = null;
+        try {
+            LOG.info(BdcMesagge.SEARCH_CLIENT + clientCode);
+            CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+            CriteriaQuery<Integer> criteriaQuery = criteriaBuilder.createQuery(Integer.class);
+            Root<F_Datos_Contacto> root = criteriaQuery.from(F_Datos_Contacto.class);
+            criteriaQuery.select(
+                    root.get(F_Datos_Contacto_.co_actvad_pral)
+            );
+            criteriaQuery.where(
+                    criteriaBuilder.equal(
+                            root.get(F_Datos_Contacto_.co_cliente), clientCode)
+            );
+            result = entityManager.createQuery(criteriaQuery).getSingleResult();
+        } catch (Exception e) {
+            if (e instanceof NoResultException) {
+                LOG.info(BdcMesagge.NO_RESULT + clientCode + ": " + e.getMessage());
+            } else {
+                LOG.error(BdcMesagge.GENERIC_ERROR + clientCode + ": " + e.getMessage());
+            }
+        }
+        return result;
+    }
+
+    public Object[] findActivityCodeByclientCodeAux(Integer clientCode) {
         Object[] result = null;
         try {
             LOG.info(BdcMesagge.SEARCH_CLIENT + clientCode);

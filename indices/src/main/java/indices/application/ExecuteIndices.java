@@ -26,7 +26,8 @@ public class ExecuteIndices {
                 hilos.get(9).isAlive());
 
         indices.searchAndAsociationInformationFromOracle(threadNumber);
-        indices.generateFileIndiceVisibilidad(threadNumber);
+        indices.calculatingAveragesBySector(threadNumber);
+        indices.generateFileIndiceVisibilidad();
         indices.closureOfConnections();
     }
 
@@ -46,7 +47,6 @@ public class ExecuteIndices {
             hilo.instanceOracleProjection(indices.getF_datos_contactoProjection(), indices.getTsi_actvadProjection());
             hilo.instanceMongoProjection(indices.getWebVisibilityAnalyticsProjection());
             hilo.instanceListClientCodes(clientCodes.get(i));
-            hilo.instancePhysycalResource(indices.getMapaRankingNumber());
             result.add(hilo);
         }
         return result;
@@ -65,7 +65,6 @@ public class ExecuteIndices {
         result.instanceOracleProjection(indices.getF_datos_contactoProjection(), indices.getTsi_actvadProjection());
         result.instanceMongoProjection(indices.getWebVisibilityAnalyticsProjection());
         result.instanceListClientCodes(indices.listsForExecutionByThreads(threadNumber).get(0));
-        result.instancePhysycalResource(indices.getMapaRankingNumber());
         return result;
     }
 }

@@ -6,13 +6,13 @@ import jpa.entity.phw_vac.Gestor_Precuentas;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import recurrent.jpa.phw_vac.Gestor_PrecuentasJpa;
+import recurrent.jpa.phw_vac.Gestor_PrecuentasJpaImpl;
 
 import javax.persistence.EntityManager;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 class Gestor_PrecuentasJpaImplTest {
