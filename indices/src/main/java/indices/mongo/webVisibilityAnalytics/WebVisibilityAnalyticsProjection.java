@@ -14,7 +14,7 @@ import java.util.NoSuchElementException;
 
 /**
  * @author Edwin Patricio Arévalo Angulo
- * <p>
+ *
  * Clase encargada de recoger los valores almacenados en la colección WEBVISIBILITYANALYTICS
  */
 public class WebVisibilityAnalyticsProjection {
@@ -41,64 +41,11 @@ public class WebVisibilityAnalyticsProjection {
     }
 
     /**
-     * Método que genera un Array de objeto con todos los valores para los KPIs 303 y 23 que pertenezcan a un código de cliente
-     * En caso de no encontrar un valor por defecto se añade el 999999999
-     * @param clientCode
-     * @return projección
-     */
-    public Object[] getKpis303And23FromWebVisibilityAnalytics(String clientCode) {
-        LOG.info(WebVisibilityAnalyticsMessage.SEARCH_CLIENT + clientCode);
-        Object[] result;
-        try {
-            query = new BasicDBObject();
-            query.put("identifier", clientCode);
-            query.put("provider", "marketgoo");
-            query.put("marketgooResponse", new BasicDBObject("$exists", true));
-            query.put("kpiseg", new BasicDBObject("$exists", true));
-            query.put("kpiseg.exists_url", new BasicDBObject("$exists", true));
-            query.put("kpiseg.exists_url", true);
-
-            instanceProjection();
-            projection = new BasicDBObject();
-            projection.put("kpiseg", 1);
-
-            sort = new BasicDBObject();
-            sort.put("timestamp", -1);
-
-            dbCursor = dbCollection.find(query, projection).sort(sort);
-
-            List<Object[]> resultados = new ArrayList<>();
-            while (dbCursor.hasNext()) {
-                DBObject dbObject = dbCursor.next();
-                result = new Object[2];
-
-                DBObject kpiseg = (DBObject) dbObject.get("kpiseg");
-                if (kpiseg.get("KPISEG23") != null) {//Keywordtop10
-                    result[0] = Integer.parseInt(String.valueOf(kpiseg.get("KPISEG23")));
-                }
-                if (kpiseg.get("KPISEG303") != null) {//PosicionGMB
-                    result[1] = Integer.parseInt(String.valueOf(kpiseg.get("KPISEG303")));
-                }
-                resultados.add(result);
-            }
-            result = getProjection(resultados, 2);
-        } catch (Exception e) {
-            if (e instanceof NoSuchElementException) {
-                LOG.info(WebVisibilityAnalyticsMessage.NO_RESULT+ clientCode + ": " + e.getMessage());
-            } else {
-                LOG.error(WebVisibilityAnalyticsMessage.GENERIC_ERROR + clientCode + " => " + e.getMessage());
-            }
-            result = new Object[2];
-        }
-        return result;
-    }
-
-    /**
      * Proyección privada que obtiene todos los errores web dado un código de cliente
      * @param clientCode
      * @return proyección
      */
-    public Object[] getErroresSeo(String clientCode){
+    public Object[] findKpisToCalculateDigitalPresence(String clientCode){
         LOG.info(WebVisibilityAnalyticsMessage.SEARCH_CLIENT + clientCode);
         Object[] result;
         try{
@@ -122,7 +69,7 @@ public class WebVisibilityAnalyticsProjection {
             List<Object[]> resultados = new ArrayList<>();
             while (dbCursor.hasNext()) {
                 DBObject dbObject = dbCursor.next();
-                result = new Object[13];
+                result = new Object[15];
 
                 DBObject kpiseg = (DBObject) dbObject.get("kpiseg");
                 if (kpiseg.get("KPISEG05") != null) {//>3 Enlaces rotos
@@ -158,22 +105,28 @@ public class WebVisibilityAnalyticsProjection {
                 if (kpiseg.get("KPISEG16") != null) {//>5 segs carga móvil
                     result[10] = Boolean.valueOf(String.valueOf(kpiseg.get("KPISEG16")));
                 }
-                if(kpiseg.get("KPISEG32") != null){//projection.put("claimBusiness", 1);
+                if(kpiseg.get("KPISEG32") != null){//claimBusiness
                     result[11] = Boolean.valueOf(String.valueOf(kpiseg.get("KPISEG32")));
                 }
-                if (kpiseg.get("KPISEG122") != null) {//>5 segs carga móvil
+                if (kpiseg.get("KPISEG122") != null) {//reviews
                     result[12] = Utils.getIntegerByString(String.valueOf(kpiseg.get("KPISEG122")));
+                }
+                if(kpiseg.get("KPISEG302") != null){//rankingNumber
+                    result[13] = Integer.parseInt(String.valueOf(kpiseg.get("KPISEG302")));
+                }
+                if(kpiseg.get("KPISEG23") != null){//keywordtop10
+                    result[14] = Integer.parseInt(String.valueOf(kpiseg.get("KPISEG23")));
                 }
                 resultados.add(result);
             }
-            result = getProjection(resultados, 11);
+            result = getProjection(resultados, 15);
         }catch (Exception e){
             if (e instanceof NoSuchElementException) {
                 LOG.info(WebVisibilityAnalyticsMessage.NO_RESULT+ clientCode + ": " + e.getMessage());
             } else {
                 LOG.error(WebVisibilityAnalyticsMessage.GENERIC_ERROR + clientCode + " => " + e.getMessage());
             }
-            result = new Object[11];
+            result = new Object[15];
         }
         return result;
     }

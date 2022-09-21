@@ -339,7 +339,7 @@ public class URLsMarketgoo {
          * PASO 2: Elimino todos los códigos de prueba
          */
         LOG.info("PASO 2: Elimino todos los códigos de prueba");
-        List<String> codesPiloto = Utils.generateListFromFile("C:/knowledge-base/automation/src/main/resources/", FILENAME_PILOTO);//1856
+        List<String> codesPiloto = Utils.generateListFromFile(PATH, FILENAME_PILOTO);//1856
         List<String> disyuncion = Utils.getDisjunction(values, codesPiloto);//589724
         /**
          * PASO 3: Elimino todos los códigos que no sean numéricos

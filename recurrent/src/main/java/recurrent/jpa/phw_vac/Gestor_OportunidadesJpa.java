@@ -4,7 +4,7 @@ import jpa.entity.phw_vac.Gestor_Oportunidades;
 
 public interface Gestor_OportunidadesJpa {
 
-    public void insertGestor_Oportunidades(String line);
+    public boolean insertGestor_Oportunidades(String line);
 
     public Gestor_Oportunidades getGestorOportunidadesByCoClienteAndIdAccount(Integer co_cliente, String id_account);
 }

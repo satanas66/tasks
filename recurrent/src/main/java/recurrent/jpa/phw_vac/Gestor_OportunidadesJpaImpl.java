@@ -3,7 +3,6 @@ package recurrent.jpa.phw_vac;
 import automation.factory.Logger;
 import jpa.BdcMesagge;
 import jpa.entity.phw_vac.Gestor_Oportunidades;
-import jpa.entity.phw_vac.Gestor_Precuentas;
 import jpa.metamodel.phw_vac.Gestor_Oportunidades_;
 import recurrent.domain.business.GestorOportunidades;
 import recurrent.domain.mapper.GestorOportunidadesMapper;
@@ -30,7 +29,8 @@ public class Gestor_OportunidadesJpaImpl implements Gestor_OportunidadesJpa {
     }
 
     @Override
-    public void insertGestor_Oportunidades(String line) {
+    public boolean insertGestor_Oportunidades(String line) {
+        boolean result = true;
         GestorOportunidadesMapper mapper = new GestorOportunidadesMapper();
         GestorOportunidades gestorOportunidades = mapper.getGestorOportunidadesFromString(line);
         Gestor_Oportunidades entity = mapper.getGestor_OportunidadesFromString(gestorOportunidades);
@@ -39,8 +39,10 @@ public class Gestor_OportunidadesJpaImpl implements Gestor_OportunidadesJpa {
             entityManager.persist(entity);
             LOG.info("El registro para el cliente ha sido insertado correctamente: "+entity.getCo_cliente());
         }catch (Exception e){
+            result = false;
             LOG.error("Ha ocurrido un error al insertar el registro para el cliente: "+entity.getCo_cliente());
         }
+        return result;
     }
 
     @Override
@@ -70,9 +72,7 @@ public class Gestor_OportunidadesJpaImpl implements Gestor_OportunidadesJpa {
             } else {
                 LOG.error(BdcMesagge.GENERIC_ERROR + co_cliente + ": " + e.getMessage());
             }
-
         }
-
         return result;
     }
 

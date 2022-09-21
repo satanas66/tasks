@@ -12,7 +12,7 @@ public class GestorPrecuentasMapper {
         if (line.isEmpty()) {
             return null;
         }
-        String[] values = line.split(",");
+        String[] values = line.split(";");
         if(values.length == 8){
             gestorPrecuentas = getGestorPrecuentas(values);
             if(Utils.evaluateString(values[4])){

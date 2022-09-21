@@ -34,7 +34,7 @@ public class MercadoPotencial {
 
     private static Logger LOG = Logger.getLogger(MercadoPotencial.class);
 
-    protected String PATH = "C:/tasks/muestra-madre/src/main/resources/";
+    protected String PATH = "C:/tasks/mercado-potencial/src/main/resources/";
 
     protected String FILENAME_MERCADO_POTENCIAL = "MERCADO_POTENCIAL_";
 
@@ -341,23 +341,13 @@ public class MercadoPotencial {
      * @return lista de lista de códigos
      */
     public List<List<Integer>> listsForExecutionByThreads(int numberOfDivisions) {
-        List<Integer> clientCodes = new ArrayList<>(mapaAuditoria.keySet());//663403
-
-
-
+        List<Integer> clientCodes = new ArrayList<>(mapaAuditoria.keySet());//673369
         File file = new File(PATH+ "mercado-potencial/found_client_codes.txt");
         if(file.exists()){
-            List<Integer> clientCodesFound = Utils.generateIntegerListFromFile(PATH, "mercado-potencial/found_client_codes.txt");//700239
-            Set<Integer> prueba1 = new HashSet<>();
-            prueba1.addAll(clientCodesFound);//586357
-//            clientCodes = Utils.getDisjunctionFromLists(new ArrayList<>(mapaAuditoria.keySet()), clientCodesFound);
-            List<Integer> clientCodesOld = Utils.generateIntegerListFromFile(PATH, "mercado-potencial/20220722.txt");//577684
-            Set<Integer> prueba2 = new HashSet<>();
-            prueba2.addAll(clientCodesOld);//577679
-
-            clientCodes = Utils.getDisjunctionFromLists(new ArrayList(prueba2), new ArrayList(prueba1));
-            Collections.sort(clientCodes);
+            List<Integer> clientCodesFound = Utils.generateIntegerListFromFile(PATH, "mercado-potencial/found_client_codes.txt");//96700, 138100, 224800
+            List<Integer> disjunction = Utils.getDisjunctionFromLists(clientCodes, clientCodesFound);
+            return Utils.getListDivision(disjunction, numberOfDivisions);
         }
-        return Utils.getListDivision(clientCodes, numberOfDivisions);//668113
+        return Utils.getListDivision(clientCodes, numberOfDivisions);
     }
 }

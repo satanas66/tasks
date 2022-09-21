@@ -30,20 +30,20 @@ public class WebVisibilityAnalyticsProjectionTest {
         connectionMongo.endConnection();
     }
 
-    @Test
-    public void getKpis303And23FromWebVisibilityAnalytics() {
-        Object[] result = webVisibilityAnalyticsProjection.getKpis303And23FromWebVisibilityAnalytics("270898513");
-        assertThat(result).isNotNull();
-        assertThat(result[0]).isEqualTo(9);
-        assertThat(result[1]).isEqualTo(null);
-    }
-
-    @Test
-    public void getErroresSeo() {
-        Object[] result = webVisibilityAnalyticsProjection.getErroresSeo("270898513");
-        assertThat(result).isNotNull();
-        assertThat(result.length).isNotZero().isEqualTo(13);
-    }
+//    @Test
+//    public void getKpis303And23FromWebVisibilityAnalytics() {
+//        Object[] result = webVisibilityAnalyticsProjection.getKpis303And23FromWebVisibilityAnalytics("270898513");
+//        assertThat(result).isNotNull();
+//        assertThat(result[0]).isEqualTo(9);
+//        assertThat(result[1]).isEqualTo(null);
+//    }
+//
+//    @Test
+//    public void getErroresSeo() {
+//        Object[] result = webVisibilityAnalyticsProjection.getErroresSeo("270898513");
+//        assertThat(result).isNotNull();
+//        assertThat(result.length).isNotZero().isEqualTo(13);
+//    }
 
 //    public Integer calculateErroresSeo(String clientCode){
 //        Object[] projection = getErroresSeo(clientCode);

@@ -78,8 +78,8 @@ public class AuditoriaProjection {
                 /**PASO 2: HAGO UNA COPIA CON EL RESULTADO DEL PASO 1 **/
                 backUpClientCodesAndSource(clientCodesAndSources);
             } else {
-                List<String> values = Utils.generateListFromFile(this.path, FILENAME_CLIENTCODES_AND_SOURCES);//606427
-                clientCodesAndSources = Utils.getMapIntegerStringFromListString(values);//606427
+                List<String> values = Utils.generateListFromFile(this.path, FILENAME_CLIENTCODES_AND_SOURCES);
+                clientCodesAndSources = Utils.getMapIntegerStringFromListString(values);
             }
 
             /**PASO 3: BUSQUEDA DE PROYECCIONES DE ALTAS, MODIFICACIONES Y RECHAZOS*/
@@ -113,7 +113,7 @@ public class AuditoriaProjection {
         Map<Integer, String> result = null;
         try {
             LOG.info("Cargando códigos de clientes y origenes que han sido eliminados por error...");
-            result = Utils.generateMapFromFileCsv(this.path, "client_and_resource_codes_before_deletion.csv");
+            result = Utils.generateMapFromFileCsv(this.path, "client_and_resource_codes_before_deletion.csv");//504270
             Map<String, Map<String, String>> allSources = getAllSources();
             for (String operationType : allSources.keySet()) {
                 Map<String, String> origenes = allSources.get(operationType);
@@ -196,7 +196,7 @@ public class AuditoriaProjection {
     }
 
     /**
-     * Método que añade el origen del dato y el tipo de operación realizada en el dato, ejemplo: (facebook, modificacion)     *
+     * Método que añade el origen del dato y el tipo de operación realizada en el dato, ejemplo: (facebook, modificacion)
      *
      * @param origenes
      * @param projections

@@ -85,9 +85,7 @@ public class Recomendador {
      * @return lista de lista de códigos de clientes
      */
     public List<List<String>> listsForExecutionByThreads(int numberOfDivisions) {
-        List<String> first = Utils.generateListFromFile(PATH, "20220603.txt");
-        List<String> second = Utils.generateListFromFile(PATH, "20220721.txt");
-        List<String> clientCodes = Utils.getDisjunctionFromLists(first, second);
+        List<String> clientCodes = Utils.generateListFromFile(PATH, "20220916.txt");
         Collections.sort(clientCodes);
         return Utils.getListDivision(clientCodes, numberOfDivisions);
     }

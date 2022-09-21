@@ -32,6 +32,14 @@ public class F_Datos_Contacto {
 
     @Column(name = "TELEFONO1")
     private String telefono1;
+    @Column(name = "TELEFONO2")
+    private String telefono2;
+    @Column(name = "TELEFONO3")
+    private String telefono3;
+    @Column(name = "TELEFONO4")
+    private String telefono4;
+    @Column(name = "TELEFONO5")
+    private String telefono5;
 
     @Column(name = "CO_ACTVAD_PRAL")
     private Integer co_actvad_pral;

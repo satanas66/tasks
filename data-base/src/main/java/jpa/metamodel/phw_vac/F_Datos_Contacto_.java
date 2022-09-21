@@ -23,6 +23,10 @@ public class F_Datos_Contacto_ {
     public static volatile SingularAttribute<F_Datos_Contacto, String> nc_nif;
     public static volatile SingularAttribute<F_Datos_Contacto, String> tx_loca_apa;
     public static volatile SingularAttribute<F_Datos_Contacto, String> telefono1;
+    public static volatile SingularAttribute<F_Datos_Contacto, String> telefono2;
+    public static volatile SingularAttribute<F_Datos_Contacto, String> telefono3;
+    public static volatile SingularAttribute<F_Datos_Contacto, String> telefono4;
+    public static volatile SingularAttribute<F_Datos_Contacto, String> telefono5;
     public static volatile SingularAttribute<F_Datos_Contacto, String> tx_ccaa;
     public static volatile SingularAttribute<F_Datos_Contacto, String> cc_nom_empre;
     public static volatile SingularAttribute<F_Datos_Contacto, String> email;

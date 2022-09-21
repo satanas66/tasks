@@ -11,6 +11,17 @@
 
     <artifactId>source-audit</artifactId>
 
-
+    <dependencies>
+        <dependency>
+            <groupId>tasks</groupId>
+            <artifactId>message</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>tasks</groupId>
+            <artifactId>data-base</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+    </dependencies>
 
 </project>

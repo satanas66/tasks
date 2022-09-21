@@ -18,6 +18,7 @@
         <module>indices</module>
         <module>recurrent</module>
         <module>source-audit</module>
+        <module>mercado-no-web-analytics</module>
     </modules>
 
     <properties>
@@ -80,5 +81,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>

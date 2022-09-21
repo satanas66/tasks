@@ -1,25 +1,21 @@
 package recurrent.tasks;
 
 import automation.factory.Logger;
-import automation.factory.Utils;
 import jpa.ConnectionJpa;
 import recurrent.jpa.phw_vac.Gestor_PrecuentasJpa;
 import recurrent.jpa.phw_vac.Gestor_PrecuentasJpaImpl;
 
 import javax.persistence.EntityManager;
-import java.util.List;
 
 public class GestorPrecuentasTasks {
 
     private static Logger LOG = Logger.getLogger(GestorPrecuentasTasks.class);
 
-    private static final String PATH = "C:/tasks/recurrent/src/main/resources/update/";
+    private ConnectionJpa connectionJpa;
 
-    private static ConnectionJpa connectionJpa;
+    private EntityManager entityManager;
 
-    private static EntityManager entityManager;
-
-    private static Gestor_PrecuentasJpa gestor_precuentasJpa;
+    private Gestor_PrecuentasJpa gestor_precuentasJpa;
 
     public GestorPrecuentasTasks() {
         relationalDBStart();
@@ -33,11 +29,15 @@ public class GestorPrecuentasTasks {
         LOG.info("Abriendo conexiones a OracleDB");
         connectionJpa = new ConnectionJpa();
         entityManager = connectionJpa.getPHWVACEntityManager();
-        LOG.info("Conexiones establecidas a OracleDB");
+        String message = "Se ha establecido la conexión con la base de datos " + connectionJpa.getPHW_VAC();
+        if (entityManager == null) {
+            message = "No ha sido posible establecer la conexión con la base de datos " + connectionJpa.getPHW_VAC();
+        }
+        LOG.info(message);
     }
 
     /**
-     * Método que cierra las conexiones a MONGO, ORACLE y MySql
+     * Método que cierra las conexiones ORACLE y MySql
      */
     public void closureOfConnections() {
         LOG.info("Cerrando conexiones a OracleDB");
@@ -56,23 +56,28 @@ public class GestorPrecuentasTasks {
         gestor_precuentasJpa = new Gestor_PrecuentasJpaImpl(entityManager);
     }
 
-    public void updateGestorPrecuentasFromFile() {
-        entityManager.getTransaction().begin();
-        List<String> lines = Utils.generateListFromFile(PATH, "gestor_precuentas.csv");
-        for (int i = 0; i < lines.size(); i++) {
-            String line = lines.get(i);
-            gestor_precuentasJpa.updateGestorPrecuentasByClienteFicticioAndEstadoReg(line);
-        }
-        entityManager.getTransaction().commit();
+    public EntityManager getEntityManager() {
+        return entityManager;
     }
 
-    public void updateGestorPrecuentasErrorFromFile() {
-        entityManager.getTransaction().begin();
-        List<String> lines = Utils.generateListFromFile(PATH, "gestor_precuentas_error.csv");
-        for (int i = 0; i < lines.size(); i++) {
-            String line = lines.get(i);
-            gestor_precuentasJpa.updateGestorPrecuentasByClienteFicticioAndEstadoRegError(line);
-        }
-        entityManager.getTransaction().commit();
+    public Gestor_PrecuentasJpa getGestor_precuentasJpa() {
+        return gestor_precuentasJpa;
     }
+
+    //    public void findAllGestorPrecuentasByFile(){
+//        List<String> lines = Utils.generateListFromFile(PATH, "gestor_precuentas.csv");
+//        List<String> resultados = new ArrayList<>();
+//        for (int i = 0; i < lines.size(); i++) {
+//            String line = lines.get(i);
+//            GestorPrecuentasMapper mapper = new GestorPrecuentasMapper();
+//            GestorPrecuentas gestorPrecuentas = mapper.getGestorPrecuentasFromString(line);
+//            Gestor_Precuentas gestor_precuentas = gestor_precuentasJpa.findByByClienteFicticioAndEstadoReg(gestorPrecuentas.getClienteFicticio(), gestorPrecuentas.getEstadoRegCurrent());
+//            if(gestor_precuentas != null){
+//                String resultado = gestor_precuentas.getEstadoReg()+";"+gestor_precuentas.getClienteFicticio()+";"+gestor_precuentas.getFeInicio()+";"+gestor_precuentas.getFeModiReg()+";"+gestor_precuentas.getTxObservacion()+";"+gestor_precuentas.getTxError();
+//                resultados.add(resultado);
+//            }
+//        }
+//        Text.generateTxtFileWithStrings(resultados, PATH, "consulta.csv");
+//    }
+
 }

@@ -21,15 +21,15 @@ public class ConnectionJpa {
 
     private final static String PACKAGE = "es.data.master.jpa.persistence.unit.";
 
-    private final static String PHW_VAC = PACKAGE + "phw_vac";
+    private String PHW_VAC = PACKAGE + "phw_vac";
 
-    private final static String SISORA = PACKAGE + "sisora";
+    private String SISORA = PACKAGE + "sisora";
 
-    private final static String GESTFORD = PACKAGE + "gestford";
+    private String GESTFORD = PACKAGE + "gestford";
 
-    private final static String PA = PACKAGE + "pa";
+    private String PA = PACKAGE + "pa";
 
-    private final static String GESTCLI_SISORA = PACKAGE + "gestcli.sisora";
+    private String GESTCLI_SISORA = PACKAGE + "gestcli.sisora";
 
     private EntityManagerFactory entityManagerFactory;
 
@@ -144,5 +144,25 @@ public class ConnectionJpa {
             LOG.error(ERROR + "BDCL1P: " + e.getMessage());
         }
         return entityManager;
+    }
+
+    public String getPHW_VAC() {
+        return PHW_VAC;
+    }
+
+    public String getSISORA() {
+        return SISORA;
+    }
+
+    public String getGESTFORD() {
+        return GESTFORD;
+    }
+
+    public String getPA() {
+        return PA;
+    }
+
+    public String getGESTCLI_SISORA() {
+        return GESTCLI_SISORA;
     }
 }

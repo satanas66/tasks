@@ -6,7 +6,6 @@ public interface Gestor_PrecuentasJpa {
 
     Gestor_Precuentas findByByClienteFicticioAndEstadoReg(Integer clienteFicticio, String estadoReg);
 
-    void updateGestorPrecuentasByClienteFicticioAndEstadoReg(String line);
+    boolean updateGestorPrecuentasByClienteFicticioAndEstadoReg(String line);
 
-    void updateGestorPrecuentasByClienteFicticioAndEstadoRegError(String line);
 }

@@ -57,7 +57,7 @@ public class RecomendadorThread extends Thread{
                 if(projection != null){
                     RecomendadorPaquetesMapper recomendadorPaquetesMapper = new RecomendadorPaquetesMapper();
                     RecomendadorPaquetes recomendadorPaquetes = recomendadorPaquetesMapper.setKpisRecomendadorPaquetes(new RecomendadorPaquetes(), projection);
-                    list.add(recomendadorPaquetes);break;
+                    list.add(recomendadorPaquetes);
                 }
             } catch (Exception e) {
                 LOG.error("Ha ocurrido un error durante la consulta del cliente: " + clientCode);

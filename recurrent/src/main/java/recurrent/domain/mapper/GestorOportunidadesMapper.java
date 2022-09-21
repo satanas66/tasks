@@ -230,7 +230,7 @@ public class GestorOportunidadesMapper {
                 .id_usuario(gestorOportunidades.getId_usuario())
                 .id_camp_salesforce(gestorOportunidades.getId_camp_salesforce())
                 .fe_inicio_reg(gestorOportunidades.getFe_inicio_reg())
-                .fe_fin_reg(gestorOportunidades.getFe_inicio_reg())
+                .fe_fin_reg(gestorOportunidades.getFe_fin_reg())
                 .zoom(gestorOportunidades.getZoom())
                 .concurrencia(gestorOportunidades.getConcurrencia())
                 .estado_reg(gestorOportunidades.getEstado_reg())
