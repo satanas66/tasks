@@ -69,8 +69,6 @@ public class MercadoCandidato {
 
     private ConnectionMongo connectionMongo;
 
-    private DBCollection scrappingDbCollection;
-
     private DBCollection webVisibilityAnalyticsDbCollection;
 
     private DBCollection bi_RecomendatorCollection;
@@ -167,9 +165,8 @@ public class MercadoCandidato {
     public void noRelationalDBStart() {
         if (continuaProceso) {
             LOG.info("Abriendo conexión a MONGODB");
-            connectionMongo = new ConnectionMongo("PRO");
+            connectionMongo = new ConnectionMongo();
             if (connectionMongo.getMongoClient() != null) {
-                scrappingDbCollection = connectionMongo.getDBCollection("scrapping");
                 webVisibilityAnalyticsDbCollection = connectionMongo.getDBCollection("webVisibilityAnalytics");
                 bi_RecomendatorCollection = connectionMongo.getDBCollection("bi_Recomendador");
                 kpis_ActividadDbCollection = connectionMongo.getDBCollection("kpis_actividad");
@@ -392,14 +389,14 @@ public class MercadoCandidato {
     }
 
     /**
-     * Método que genera los recursos iniciales para la construcción del fichero madre
+     * Método que genera los recursos iniciales para la construcción del fichero candidato
      */
     public void generateResources() {
         File file = new File(PATH + FILENAME_BIPA);
         if (!file.exists()) {
-            LOG.info("Buscando los códigos de los clientes (clientCodes) con origen octoparse y scrappingHub...");
+            LOG.info("Buscando los códigos de los clientes (clientCodes)..");
             List<String> clientCodes = vhv_cuotas_mes_v2Projection.findAllAliveClientCodes();
-            LOG.info("Fin de la búsqueda de los códigos de los clientes (clientCodes) con origen octoparse y scrappingHub");
+            LOG.info("Fin de la búsqueda de los códigos de los clientes (clientCodes)");
             LOG.info("Escribiendo resultados...");
             continuaProceso = Text.generateTxtFile(clientCodes, PATH, FILENAME_BIPA);
             LOG.info("Los resultados han sido escritos en " + PATH + FILENAME_BIPA);
@@ -408,6 +405,8 @@ public class MercadoCandidato {
 
     public List<List<Integer>> listsForExecutionByThreads(int numberOfDivisions, String path, String nameFile) {
         List<Integer> clientCodes = Utils.generateIntegerListFromFile(path, nameFile);
+//        List<Integer> clientCodesFound = Utils.generateIntegerListFromFile(path, "clientCodes_found.txt");
+//        List<Integer> disjunction = Utils.getDisjunctionFromLists(clientCodes, clientCodesFound);
         return Utils.getListDivision(clientCodes, numberOfDivisions);
     }
 

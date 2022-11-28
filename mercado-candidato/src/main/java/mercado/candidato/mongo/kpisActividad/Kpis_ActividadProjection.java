@@ -23,8 +23,6 @@ public class Kpis_ActividadProjection {
 
     private BasicDBObject projection;
 
-    private BasicDBObject sort;
-
     private DBCursor dbCursor;
 
     public Kpis_ActividadProjection(DBCollection dbCollection){

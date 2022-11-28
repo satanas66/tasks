@@ -22,7 +22,7 @@ public class Kpis_Tipol_ActividadProjectionTest {
 
     @BeforeAll
     public static void init(){
-        connectionMongo = new ConnectionMongo("DES");
+        connectionMongo = new ConnectionMongo("DES", null);
         dbCollection = connectionMongo.getDBCollection(COLLECTION_NAME);
         kpis_tipol_actividadProjection = new Kpis_Tipol_ActividadProjection(dbCollection);
     }

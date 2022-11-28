@@ -9,6 +9,10 @@ public class ExecuteRecomendador {
 
     private static Logger LOG = Logger.getLogger(ExecuteRecomendador.class);
 
+    /**
+     * El resultado de este proceso se debe enviar a Javier Muñoz
+     * @param arg
+     */
     public static void main(String[] arg) {
         /**
          * Previa a la ejecución del proyecto se debe obtener los códigos de clientes que se obtienen ejecutando el proceso muestra madre

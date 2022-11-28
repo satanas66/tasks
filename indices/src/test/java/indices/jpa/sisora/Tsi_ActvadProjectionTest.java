@@ -1,6 +1,5 @@
 package indices.jpa.sisora;
 
-import indices.application.Indices;
 import jpa.ConnectionJpa;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;

@@ -2,8 +2,8 @@ package recurrent.tasks;
 
 import automation.factory.Logger;
 import jpa.ConnectionJpa;
-import recurrent.jpa.phw_vac.Gestor_PrecuentasJpa;
-import recurrent.jpa.phw_vac.Gestor_PrecuentasJpaImpl;
+import recurrent.domain.Gestor_PrecuentasJpa;
+import recurrent.application.Gestor_PrecuentasJpaImpl;
 
 import javax.persistence.EntityManager;
 
@@ -63,21 +63,5 @@ public class GestorPrecuentasTasks {
     public Gestor_PrecuentasJpa getGestor_precuentasJpa() {
         return gestor_precuentasJpa;
     }
-
-    //    public void findAllGestorPrecuentasByFile(){
-//        List<String> lines = Utils.generateListFromFile(PATH, "gestor_precuentas.csv");
-//        List<String> resultados = new ArrayList<>();
-//        for (int i = 0; i < lines.size(); i++) {
-//            String line = lines.get(i);
-//            GestorPrecuentasMapper mapper = new GestorPrecuentasMapper();
-//            GestorPrecuentas gestorPrecuentas = mapper.getGestorPrecuentasFromString(line);
-//            Gestor_Precuentas gestor_precuentas = gestor_precuentasJpa.findByByClienteFicticioAndEstadoReg(gestorPrecuentas.getClienteFicticio(), gestorPrecuentas.getEstadoRegCurrent());
-//            if(gestor_precuentas != null){
-//                String resultado = gestor_precuentas.getEstadoReg()+";"+gestor_precuentas.getClienteFicticio()+";"+gestor_precuentas.getFeInicio()+";"+gestor_precuentas.getFeModiReg()+";"+gestor_precuentas.getTxObservacion()+";"+gestor_precuentas.getTxError();
-//                resultados.add(resultado);
-//            }
-//        }
-//        Text.generateTxtFileWithStrings(resultados, PATH, "consulta.csv");
-//    }
 
 }

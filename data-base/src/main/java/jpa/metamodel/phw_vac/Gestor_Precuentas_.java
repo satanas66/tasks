@@ -3,6 +3,7 @@ package jpa.metamodel.phw_vac;
 import jpa.entity.phw_vac.Gestor_Precuentas;
 
 import javax.annotation.processing.Generated;
+import javax.persistence.Column;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.StaticMetamodel;
 import java.util.Date;
@@ -22,6 +23,11 @@ public class Gestor_Precuentas_ {
 	public static volatile SingularAttribute<Gestor_Precuentas, String> estadoReg;
 	public static volatile SingularAttribute<Gestor_Precuentas, Date> feInicio;
 
+	public static volatile SingularAttribute<Gestor_Precuentas, String> nombre;
+	public static volatile SingularAttribute<Gestor_Precuentas, String> direccion_no_normalizada;
+	public static volatile SingularAttribute<Gestor_Precuentas, String> co_actvad;
+	public static volatile SingularAttribute<Gestor_Precuentas, String> tx_actvad_no_normalizada;
+
 	public static final String CLIENTE_FICTICIO = "clienteFicticio";
 	public static final String ACCOUNT_ID_BDC = "accountIdBdc";
 	public static final String ID_CAMP_SALESFORCE = "idCampSalesforce";
@@ -32,5 +38,9 @@ public class Gestor_Precuentas_ {
 	public static final String ESTADO_REG = "estadoReg";
 	public static final String FE_INICIO = "feInicio";
 
+	public static final String NOMBRE = "nombre";
+	public static final String DIRECCION_NO_NORMALIZADA = "direccion_no_normalizada";
+	public static final String CO_ACTVAD = "co_actvad";
+	public static final String TX_ACTVAD_NO_NORMALIZADA = "tx_actvad_no_normalizada";
 }
 

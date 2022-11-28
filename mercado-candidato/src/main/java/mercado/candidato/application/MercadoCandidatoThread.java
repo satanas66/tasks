@@ -4,6 +4,7 @@ import automation.factory.Logger;
 import automation.factory.Utils;
 import automation.factory.txt.Text;
 import automation.factory.xlsx.Excel;
+import com.mongodb.BasicDBList;
 import mercado.candidato.domain.business.*;
 import mercado.candidato.domain.mapper.*;
 import mercado.candidato.jpa.gestford.Tsf_AccountProjection;
@@ -178,8 +179,10 @@ public class MercadoCandidatoThread extends Thread {
         LOG.info("Ejecutando el " + this.getName());
         List<List<Object>> total = new ArrayList<>();
         int i = 0;
-        clientCodesInValid = new ArrayList<>();
+        List<String> clientCodesInValid = new ArrayList<>();
         for (Integer clientCode : clientCodes) {
+            String di_url="";
+            DatosContacto datosContacto = null;
             try {
                 Object[] vivo = vhv_cuotas_mes_v2Projection.findIdsProductServiceAndOportunidadByClientCode(String.valueOf(clientCode));
                 if (vivo != null && Utils.evaluateString((String) vivo[0])) {
@@ -190,14 +193,14 @@ public class MercadoCandidatoThread extends Thread {
                     if (datosContactoValues != null) {
                         /********** Datos Contacto **********/
                         DatosContactoMapper datosContactoMapper = new DatosContactoMapper();
-                        DatosContacto datosContacto = new DatosContacto();
+                        datosContacto = new DatosContacto();
                         datosContacto.setCo_cliente(clientCode);
                         datosContacto = datosContactoMapper.getDatosContactoFromProjection(datosContacto, datosContactoValues);
                         if (Utils.evaluateString(datosContacto.getEmail())) {
                             String email_hunter = mapaEmailHunter.get(datosContacto.getEmail().toLowerCase());
                             datosContacto.setEmail_hunter(email_hunter);
                         }
-                        String di_url = tsi_f_webProjection.findProjectionEWeb(clientCode);
+                        di_url = tsi_f_webProjection.findProjectionEWeb(clientCode);
                         datosContacto.setDi_url(di_url);
                         String impago = f_impagoProjection.findImpagoValue(clientCode);
                         datosContacto.setImpago(impago);
@@ -327,6 +330,7 @@ public class MercadoCandidatoThread extends Thread {
                         Object[] tdv_usuarioValues = tdv_usuarioProjection.findEmployeeInformation(kpisMercadoCandidato.getCo_vend_cliente());
                         kpisMercadoCandidato = mapper.setTdv_UsuarioProjection(kpisMercadoCandidato, tdv_usuarioValues);
                         kpisMercadoCandidato.setCo_vendedor(kpisMercadoCandidato.getCo_vend_cliente());
+
                         List<Object> kpisValues = kpisMercadoCandidato.getKpisMercadoCandidato();
                         kpisValues.addAll(datosContacto.getKpisDatosContacto());
                         kpisValues.addAll(historicoSalesforce.getKpisHistoricoSalesforce());
@@ -339,19 +343,19 @@ public class MercadoCandidatoThread extends Thread {
                         total.add(kpisValues);
 
                         i++;
-                        if (i == 1) {
+                        if (i == 100) {
                             LOG.info("Escribiendo " + i + " registros...");
                             Excel.writeKPIsAllValues(path, nameFile, total, getKPIsMercadoCandidato());
                             LOG.info("Registros escritos correctamente");
                             total = new ArrayList<>();
                             i = 0;
-                            break;
                         }
                     }
                 }
 
             } catch (Exception e) {
-                clientCodesInValid.add(clientCode);
+                clientCodesInValid.add(clientCode+","+di_url);
+                clientCodesInValid.add(clientCode+","+datosContacto.getDomain());
                 LOG.error("Ha ocurrido un error durante la consulta del cliente: " + clientCode);
             }
         }
@@ -363,16 +367,7 @@ public class MercadoCandidatoThread extends Thread {
 
         if (clientCodesInValid.size() > 0) {
             LOG.info("Obteniendo proyecciones para códigos de clientes que han provocado excepción...");
-            int x = 0;
-            while (clientCodesInValid.size() > 0) {
-                this.clientCodes = clientCodesInValid;
-                constructProjection();
-                x++;
-                if (x == 3) {
-                    Text.generateTxtFileWithIntegers(clientCodesInValid, path, this.getName() + "_client_codes_failed.txt");
-                    break;
-                }
-            }
+            Text.generateTxtFileWithStrings(clientCodesInValid, path, this.getName() + "_client_codes_failed.csv");
             LOG.info("Se han obtenido las proyecciones para códigos de clientes que han provocado excepción");
         }
     }
@@ -408,7 +403,7 @@ public class MercadoCandidatoThread extends Thread {
                 "POSITION_KW_6", "KEYWORD_7", "POSITION_KW_7", "KEYWORD_8", "POSITION_KW_8",
                 "KEYWORD_9", "POSITION_KW_9", "KEYWORD_10", "POSITION_KW_10", "RANKING_NUMBER",
                 "PAGE_URL", "NOMBRE_GOOGLE", "REVIEWS", "TOTAL_RATING", "CLAIM_BUSINESS",
-                "TIMESTAMP", "PAQUETE_RECOMENDADO");
+                "TIMESTAMP", "ACTIVIDAD_GMB", "PAQUETE_RECOMENDADO");
     }
 }
 

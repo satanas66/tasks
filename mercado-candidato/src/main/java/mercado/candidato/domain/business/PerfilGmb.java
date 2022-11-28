@@ -25,6 +25,8 @@ public class PerfilGmb {
 
     private Date timestamp;
 
+    private String actividadGMB;
+
     public String getPage_url() {
         return page_url;
     }
@@ -73,6 +75,14 @@ public class PerfilGmb {
         this.timestamp = timestamp;
     }
 
+    public String getActividadGMB() {
+        return actividadGMB;
+    }
+
+    public void setActividadGMB(String actividadGMB) {
+        this.actividadGMB = actividadGMB;
+    }
+
     public List<Object> getKpisPerfilGmb(){
         List<Object> result = new ArrayList<>();
         result.add(getPage_url());
@@ -81,6 +91,7 @@ public class PerfilGmb {
         result.add(getTotal_rating());
         result.add(getClaim_business());
         result.add(getTimestamp());
+        result.add(getActividadGMB());
         return result;
     }
 }

@@ -20,7 +20,7 @@ public class Kpis_CalculadosProjectionTest {
 
     @BeforeAll
     public static void init(){
-        connectionMongo = new ConnectionMongo("PRO");
+        connectionMongo = new ConnectionMongo("PRO", 1);
         dbCollection = connectionMongo.getDBCollection(COLLECTION_NAME);
         kpis_calculadosProjection = new Kpis_CalculadosProjection(dbCollection);
     }

@@ -1,13 +1,11 @@
 package recurrent.tasks;
 
 import automation.factory.Logger;
-import automation.factory.Utils;
 import jpa.ConnectionJpa;
-import recurrent.jpa.phw_vac.Gestor_OportunidadesJpa;
-import recurrent.jpa.phw_vac.Gestor_OportunidadesJpaImpl;
+import recurrent.domain.Gestor_OportunidadesJpa;
+import recurrent.application.Gestor_OportunidadesJpaImpl;
 
 import javax.persistence.EntityManager;
-import java.util.List;
 
 public class GestorOportunidadesTasks {
 

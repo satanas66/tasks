@@ -53,7 +53,8 @@ public class F_Datos_ContactoProjection {
                     root.get(F_Datos_Contacto_.nc_nif),
                     root.get(F_Datos_Contacto_.co_empresa),
                     root.get(F_Datos_Contacto_.co_actvad_pral),
-                    root.get(F_Datos_Contacto_.rating_crediticio)
+                    root.get(F_Datos_Contacto_.rating_crediticio),
+                    root.get(F_Datos_Contacto_.cc_pers_cto)
             );
             criteriaQuery.where(
                     criteriaBuilder.equal(

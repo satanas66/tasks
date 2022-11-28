@@ -58,6 +58,9 @@ public class DatosContactoMapper {
         if(projection[13] != null){
             datosContacto.setRating_crediticio((String) projection[13]);
         }
+        if(projection[14] != null){
+            datosContacto.setPersona_contacto((String) projection[14]);
+        }
         return datosContacto;
     }
 

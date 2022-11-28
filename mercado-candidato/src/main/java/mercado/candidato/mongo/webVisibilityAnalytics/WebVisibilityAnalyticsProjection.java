@@ -7,14 +7,11 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import mongo.WebVisibilityAnalyticsMessage;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 /**
  * @author Edwin Patricio Arévalo Angulo
- *
+ * <p>
  * Clase encargada de recoger los valores almacenados en la colección WEBVISIBILITYANALYTICS
  */
 public class WebVisibilityAnalyticsProjection {
@@ -106,12 +103,13 @@ public class WebVisibilityAnalyticsProjection {
 
     /**
      * Método que devuelve la proyección más actualizada
+     *
      * @param clientCode
      * @return
      */
     private BasicDBObject getLastProjection(String clientCode) {
         List<BasicDBObject> projections = getResultListKPIs(clientCode);
-        return (projections.size()>0)?projections.get(0):null;
+        return (projections.size() > 0) ? projections.get(0) : null;
     }
 
     /**
@@ -119,6 +117,7 @@ public class WebVisibilityAnalyticsProjection {
      * Prepondera la lista válida
      * Este método se realiza debido a que hay varios registros para un mismo cliente que tienen un mismo timestamp y en su gran mayoria
      * muchos de estos registros son inválidos
+     *
      * @param clientCode
      * @return
      */
@@ -170,10 +169,9 @@ public class WebVisibilityAnalyticsProjection {
      */
     public Object[] getProjectionFromWebVisibilityAnalytics(String clientCode) {
         Object[] projection = null;
-//        BasicDBObject basicDBObject = getValidBasicDBObject(clientCode);
         BasicDBObject basicDBObject = getLastProjection(clientCode);
-        if(basicDBObject != null){
-            projection = new Object[53];
+        if (basicDBObject != null) {
+            projection = new Object[54];
             if (basicDBObject.get("domain") != null) {
                 projection[0] = basicDBObject.get("domain");
             }
@@ -226,97 +224,102 @@ public class WebVisibilityAnalyticsProjection {
                     projection[15] = kpiseg.get("KPISEG23");
                 }
 
-                if(kpiseg.get("KPISEG104") != null){
+                if (kpiseg.get("KPISEG104") != null) {
                     projection[16] = kpiseg.get("KPISEG104"); //projection.put("phones", 1);
                 }
-                if(kpiseg.get("KPISEG201") != null){
+                if (kpiseg.get("KPISEG201") != null) {
                     projection[17] = kpiseg.get("KPISEG201");//projection.put("web", 1);
                 }
-                if(kpiseg.get("KPISEG120") != null){
+                if (kpiseg.get("KPISEG120") != null) {
                     projection[18] = kpiseg.get("KPISEG120"); //projection.put("rankingNumber", 1)
                 }
-                if(kpiseg.get("KPISEG103") != null){
+                if (kpiseg.get("KPISEG103") != null) {
                     projection[19] = kpiseg.get("KPISEG103");//projection.put("page_url", 1);
                 }
-                if(kpiseg.get("KPISEG121") != null){
+                if (kpiseg.get("KPISEG121") != null) {
                     projection[20] = kpiseg.get("KPISEG121");//projection.put("name", 1);
                 }
-                if(kpiseg.get("KPISEG122") != null){
+                if (kpiseg.get("KPISEG122") != null) {
                     projection[21] = kpiseg.get("KPISEG122");//projection.put("reviews", 1);
                 }
-                if(kpiseg.get("KPISEG204") != null){
+                if (kpiseg.get("KPISEG204") != null) {
                     projection[22] = kpiseg.get("KPISEG204");// projection.put("rating", 1);
                 }
-                if(kpiseg.get("KPISEG32") != null){
+                if (kpiseg.get("KPISEG32") != null) {
                     projection[23] = kpiseg.get("KPISEG32");//projection.put("claimBusiness", 1);
+                }
+                if (kpiseg.get("KPISEG202") != null) {
+                    projection[53] = kpiseg.get("KPISEG202");//projection.put("Actividad GMB", 1);
                 }
             }
 
-            if (basicDBObject.get("marketgooResponse") != null &&
-                    ((BasicDBObject) basicDBObject.get("marketgooResponse")).get("data") != null &&
-                    ((BasicDBObject) ((BasicDBObject) basicDBObject.get("marketgooResponse")).get("data")).get("attributes") != null) {
+            if (basicDBObject.get("marketgooResponse") != null && !(basicDBObject.get("marketgooResponse") instanceof String)) {
 
                 BasicDBObject marketgooResponse = (BasicDBObject) basicDBObject.get("marketgooResponse");
-                BasicDBObject data = (BasicDBObject) marketgooResponse.get("data");
-                BasicDBObject attributes = (BasicDBObject) data.get("attributes");
+                if (marketgooResponse.get("data") != null) {
+                    BasicDBObject data = (BasicDBObject) marketgooResponse.get("data");
+                    if (data.get("attributes") != null) {
+                        BasicDBObject attributes = (BasicDBObject) data.get("attributes");
 
-                if (attributes.get("timings") != null &&
-                        ((BasicDBObject) attributes.get("timings")).get("mobile") != null) {
-                    BasicDBObject timings = (BasicDBObject) attributes.get("timings");
-                    BasicDBObject mobile = (BasicDBObject) timings.get("mobile");
-                    if (mobile.get("width") != null) {
-                        projection[24] = mobile.get("width");
-                    }
-                    if (mobile.get("height") != null) {
-                        projection[25] = mobile.get("height");
-                    }
-                }
-
-                if (attributes.get("results") != null &&
-                        ((BasicDBObject) attributes.get("results")).get("technologies") != null) {
-
-                    BasicDBObject results = (BasicDBObject) attributes.get("results");
-                    BasicDBObject technologies = (BasicDBObject) results.get("technologies");
-
-
-                    if (technologies.get("ecommerce") != null) {
-                        BasicDBObject ecommerce = (BasicDBObject) technologies.get("ecommerce");
-                        if (ecommerce.get("checkout_link") != null) {
-                            projection[26] = ecommerce.get("checkout_link");
+                        if (attributes.get("timings") != null &&
+                                ((BasicDBObject) attributes.get("timings")).get("mobile") != null) {
+                            BasicDBObject timings = (BasicDBObject) attributes.get("timings");
+                            BasicDBObject mobile = (BasicDBObject) timings.get("mobile");
+                            if (mobile.get("width") != null) {
+                                projection[24] = mobile.get("width");
+                            }
+                            if (mobile.get("height") != null) {
+                                projection[25] = mobile.get("height");
+                            }
                         }
-                        if (ecommerce.get("booking_type") != null) {
-                            projection[27] = ecommerce.get("booking_type");
-                        }
-                    }
 
-                    if (technologies.get("social_links") != null) {
-                        BasicDBObject social_links = (BasicDBObject) technologies.get("social_links");
-                        if (social_links.get("facebook") != null) {
-                            projection[28] = social_links.get("facebook");
-                        }
-                        if (social_links.get("twitter") != null) {
-                            projection[29] = social_links.get("twitter");
-                        }
-                        if (social_links.get("instagram") != null) {
-                            projection[30] = social_links.get("instagram");
-                        }
-                        if (social_links.get("linkedin") != null) {
-                            projection[31] = social_links.get("linkedin");
-                        }
-                    }
-                }
+                        if (attributes.get("results") != null &&
+                                ((BasicDBObject) attributes.get("results")).get("technologies") != null) {
 
-                if (attributes.get("keywords") != null) {
-                    BasicDBList keywords = (BasicDBList) attributes.get("keywords");
-                    int count=0;
-                    for (int i = 0; i < keywords.size(); i++) {
-                        BasicDBObject keyword = (BasicDBObject) keywords.get(i);
-                        String word = (String) keyword.get("keyword");
-                        Integer ranking = (Integer) keyword.get("ranking");
-                        projection[32 + count] = word;
-                        count++;
-                        projection[32 + count] = ranking;
-                        count++;
+                            BasicDBObject results = (BasicDBObject) attributes.get("results");
+                            BasicDBObject technologies = (BasicDBObject) results.get("technologies");
+
+
+                            if (technologies.get("ecommerce") != null) {
+                                BasicDBObject ecommerce = (BasicDBObject) technologies.get("ecommerce");
+                                if (ecommerce.get("checkout_link") != null) {
+                                    projection[26] = ecommerce.get("checkout_link");
+                                }
+                                if (ecommerce.get("booking_type") != null) {
+                                    projection[27] = ecommerce.get("booking_type");
+                                }
+                            }
+
+                            if (technologies.get("social_links") != null) {
+                                BasicDBObject social_links = (BasicDBObject) technologies.get("social_links");
+                                if (social_links.get("facebook") != null) {
+                                    projection[28] = social_links.get("facebook");
+                                }
+                                if (social_links.get("twitter") != null) {
+                                    projection[29] = social_links.get("twitter");
+                                }
+                                if (social_links.get("instagram") != null) {
+                                    projection[30] = social_links.get("instagram");
+                                }
+                                if (social_links.get("linkedin") != null) {
+                                    projection[31] = social_links.get("linkedin");
+                                }
+                            }
+                        }
+
+                        if (attributes.get("keywords") != null) {
+                            BasicDBList keywords = (BasicDBList) attributes.get("keywords");
+                            int count = 0;
+                            for (int i = 0; i < keywords.size(); i++) {
+                                BasicDBObject keyword = (BasicDBObject) keywords.get(i);
+                                String word = (String) keyword.get("keyword");
+                                Integer ranking = (Integer) keyword.get("ranking");
+                                projection[32 + count] = word;
+                                count++;
+                                projection[32 + count] = ranking;
+                                count++;
+                            }
+                        }
                     }
                 }
             }

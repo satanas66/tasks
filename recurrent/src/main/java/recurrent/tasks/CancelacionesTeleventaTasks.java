@@ -4,8 +4,8 @@ import automation.factory.Logger;
 import automation.factory.Utils;
 import automation.factory.txt.Text;
 import jpa.ConnectionJpa;
-import recurrent.jpa.CancelacionesTeleventaJpa;
-import recurrent.jpa.CancelacionesTeleventaJpaImpl;
+import recurrent.domain.CancelacionesTeleventaJpa;
+import recurrent.application.CancelacionesTeleventaJpaImpl;
 
 import javax.persistence.EntityManager;
 import java.util.ArrayList;
@@ -14,8 +14,6 @@ import java.util.List;
 public class CancelacionesTeleventaTasks {
 
     private static Logger LOG = Logger.getLogger(CancelacionesTeleventaTasks.class);
-
-    private static final String PATH = "C:/tasks/recurrent/src/main/resources/select/";
 
     private static ConnectionJpa connectionJpa;
 
@@ -76,10 +74,9 @@ public class CancelacionesTeleventaTasks {
         LOG.info("Las conexiones a OracleDB, MySQL y MongoDB han sido cerradas");
     }
 
-    public void searchInformationToTelesalesChannel(){
-        List<Integer> clientCodes = Utils.generateIntegerListFromFile(PATH, "clientCodes.txt");
+    public List<String> searchInformationToTelesalesChannel(List<Integer> clientCodes){
         List<String> resultados = new ArrayList<>();
-        resultados.add("CO_CLIENTE;ID_ACCOUNT;CO_AMBI_COMER;CO_SECTOR;TX_SECTOR;CO_CCAA;TX_CCAA;ALIANZA;IMPAGO;VIVO;ULTIMA_OPORTUNIDAD");
+        resultados.add("CO_CLIENTE;ID_ACCOUNT;CO_AMBI_COMER;TX_ACTVAD;CO_SECTOR;TX_SECTOR;CO_CCAA;TX_CCAA;ALIANZA;IMPAGO;VIVO;ULTIMA_OPORTUNIDAD");
         for(Integer clientCode : clientCodes){
             String values = String.valueOf(clientCode);
             String idAccount = cancelacionesTeleventaJpa.getIdAccountByClientCode(clientCode);
@@ -96,6 +93,7 @@ public class CancelacionesTeleventaTasks {
             String coAmbiComer = "";
             String ccaa = "";
             String txcaa = "";
+            String txactvad = "";
             if(projection != null ){
                 if(projection[0] != null){
                     ccaa = (String) projection[0];
@@ -104,10 +102,13 @@ public class CancelacionesTeleventaTasks {
                     txcaa = (String) projection[1];
                 }
                 if(projection[3] != null){
-                    coAmbiComer = (String) projection[3];
+                    txactvad = (String) projection[3];//texto actividad
+                }
+                if(projection[4] != null){
+                    coAmbiComer = (String) projection[3];//Provincia
                 }
             }
-            values = values+";"+coAmbiComer+";"+sectorCode+";"+sectorText+";"+ccaa+";"+txcaa;
+            values = values+";"+coAmbiComer+";"+txactvad+";"+sectorCode+";"+sectorText+";"+ccaa+";"+txcaa;
             String alianza = cancelacionesTeleventaJpa.getAlianzaByClientCode(clientCode);
             String alianzaEvaluada = Utils.evaluateString(alianza)?alianza:"";
             values=values+";"+alianzaEvaluada;
@@ -120,6 +121,10 @@ public class CancelacionesTeleventaTasks {
             values = values+";"+lastChance;
             resultados.add(values);
         }
-        Text.generateTxtFileWithStrings(resultados, PATH, "resultados.csv");
+        return resultados;
+    }
+
+    public String getIdAccountByClientCode(Integer clientCode){
+        return cancelacionesTeleventaJpa.getIdAccountByClientCode(clientCode);
     }
 }

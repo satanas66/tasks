@@ -59,4 +59,7 @@ public class F_Datos_Contacto {
 
     @Column(name = "CO_EMPRESA")
     private Integer co_empresa;
+
+    @Column(name = "CC_PERS_CTO")
+    private String cc_pers_cto;
 }

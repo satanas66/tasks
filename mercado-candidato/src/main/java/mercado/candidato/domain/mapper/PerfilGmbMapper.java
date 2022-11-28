@@ -37,6 +37,10 @@ public class PerfilGmbMapper {
             perfilGmb.setTimestamp((Date) projection[52]);
         }
 
+        if(projection[53] != null){
+            perfilGmb.setActividadGMB((String) projection[53]);
+        }
+
         return perfilGmb;
     }
 

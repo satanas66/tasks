@@ -20,7 +20,7 @@ public class Kpis_Pr_Canc_DailyProjectionTest {
 
     @BeforeAll
     public static void init(){
-        connectionMongo = new ConnectionMongo("PRO");
+        connectionMongo = new ConnectionMongo("PRO", 1);
         dbCollection = connectionMongo.getDBCollection(COLLECTION_NAME);
         kpis_pr_canc_dailyProjection = new Kpis_Pr_Canc_DailyProjection(dbCollection);
     }

@@ -2,8 +2,11 @@ package mercado.potencial.application;
 
 import automation.factory.Logger;
 import automation.factory.Utils;
+import automation.factory.txt.Text;
+import com.mongodb.BasicDBList;
 import com.mongodb.DBCollection;
 import jpa.ConnectionJpa;
+import mercado.potencial.mongo.webVisibilityKpisMapping.WebVisibilityKpisMappingProjection;
 import mongo.ConnectionMongo;
 import mercado.potencial.jpa.gestcli_sisora.Tcl_ClieProjection;
 import mercado.potencial.jpa.gestcli_sisora.Tipcl_Camp_RespuestaProjection;
@@ -58,6 +61,8 @@ public class MercadoPotencial {
 
     private DBCollection bi_RecomendatorCollection;
 
+    private DBCollection webVisibilityKpisMappingDbCollection;
+
     private ConnectionJpa connectionJpa;
 
     private EntityManager entityManagerPHWVAC;
@@ -104,6 +109,10 @@ public class MercadoPotencial {
 
     private Bi_RecomendatorProjection bi_recomendatorProjection;
 
+    private BasicDBList kpiseg400;
+
+    private BasicDBList kpiseg401;
+
     public MercadoPotencial() {
         initPhysycalResource();
         relationalDBStart();
@@ -143,10 +152,11 @@ public class MercadoPotencial {
     public void noRelationalDBStart() {
         if (continuaProceso) {
             LOG.info("Abriendo conexión a MONGODB");
-            connectionMongo = new ConnectionMongo("PRO");
+            connectionMongo = new ConnectionMongo();
             if (connectionMongo.getMongoClient() != null) {
                 webVisibilityAnalyticsDbCollection = connectionMongo.getDBCollection("webVisibilityAnalytics");
                 bi_RecomendatorCollection = connectionMongo.getDBCollection("bi_Recomendador");
+                webVisibilityKpisMappingDbCollection = connectionMongo.getDBCollection("webVisibilityKPIsMapping");
             } else {
                 continuaProceso = false;
             }
@@ -240,6 +250,11 @@ public class MercadoPotencial {
         LOG.info("Instanciado clases projection para realizar las consultas a MongoDB");
         webVisibilityAnalyticsProjection = new WebVisibilityAnalyticsProjection(webVisibilityAnalyticsDbCollection);
         bi_recomendatorProjection = new Bi_RecomendatorProjection(bi_RecomendatorCollection);
+        WebVisibilityKpisMappingProjection webVisibilityKpisMappingProjection = new WebVisibilityKpisMappingProjection(webVisibilityKpisMappingDbCollection);
+        if (webVisibilityKpisMappingProjection != null) {
+            this.kpiseg400 = webVisibilityKpisMappingProjection.findDependentIndicesOnKPISEG("KPISEG400");
+            this.kpiseg401 = webVisibilityKpisMappingProjection.findDependentIndicesOnKPISEG("KPISEG401");
+        }
     }
 
     public F_Datos_ContactoProjection getF_datos_contactoProjection() {
@@ -302,6 +317,14 @@ public class MercadoPotencial {
         return bi_recomendatorProjection;
     }
 
+    public BasicDBList getKpiseg400() {
+        return kpiseg400;
+    }
+
+    public BasicDBList getKpiseg401() {
+        return kpiseg401;
+    }
+
     public boolean isContinuaProceso() {
         return continuaProceso;
     }
@@ -341,13 +364,36 @@ public class MercadoPotencial {
      * @return lista de lista de códigos
      */
     public List<List<Integer>> listsForExecutionByThreads(int numberOfDivisions) {
-        List<Integer> clientCodes = new ArrayList<>(mapaAuditoria.keySet());//673369
-        File file = new File(PATH+ "mercado-potencial/found_client_codes.txt");
-        if(file.exists()){
-            List<Integer> clientCodesFound = Utils.generateIntegerListFromFile(PATH, "mercado-potencial/found_client_codes.txt");//96700, 138100, 224800
+        List<Integer> clientCodes = new ArrayList<>(mapaAuditoria.keySet());
+        File file = new File(PATH + "mercado-potencial/found_client_codes.txt");
+        if (file.exists()) {
+            List<Integer> clientCodesFound = Utils.generateIntegerListFromFile(PATH, "mercado-potencial/found_client_codes.txt");
             List<Integer> disjunction = Utils.getDisjunctionFromLists(clientCodes, clientCodesFound);
             return Utils.getListDivision(disjunction, numberOfDivisions);
         }
         return Utils.getListDivision(clientCodes, numberOfDivisions);
+    }
+
+    public void generateFileListsToExecution(int numberOfDivisions) {
+        List<Integer> allClientCodes = new ArrayList<>(mapaAuditoria.keySet());
+       List<List<Integer>> division = Utils.getListDivision(allClientCodes, numberOfDivisions);
+        for(int i=0; i<numberOfDivisions; i++){
+            String fileName = "clientCodes"+(i+1)+".txt";
+            File file = new File(PATH+fileName);
+            if(!file.exists()){
+                Text.generateTxtFileWithIntegers(division.get(i), PATH, fileName);
+            }
+        }
+    }
+
+    /**
+     * Método que genera una Lista de lista de códigos de clientes
+     *
+     * @return lista de lista de códigos
+     */
+    public List<List<Integer>> getClientCodes(String fileName) {
+        List<Integer> result = Utils.generateIntegerListFromFile(PATH, fileName);
+        return Utils.getListDivision(result, 1);
+
     }
 }

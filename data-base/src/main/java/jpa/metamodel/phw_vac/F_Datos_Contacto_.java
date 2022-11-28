@@ -3,6 +3,7 @@ package jpa.metamodel.phw_vac;
 import jpa.entity.phw_vac.F_Datos_Contacto;
 
 import javax.annotation.processing.Generated;
+import javax.persistence.Column;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.StaticMetamodel;
 
@@ -31,5 +32,5 @@ public class F_Datos_Contacto_ {
     public static volatile SingularAttribute<F_Datos_Contacto, String> cc_nom_empre;
     public static volatile SingularAttribute<F_Datos_Contacto, String> email;
     public static volatile SingularAttribute<F_Datos_Contacto, Integer> co_actvad_pral;
-
+    public static volatile SingularAttribute<F_Datos_Contacto, String> cc_pers_cto;
 }

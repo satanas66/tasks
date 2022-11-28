@@ -6,8 +6,8 @@ import jpa.entity.phw_vac.Gestor_Precuentas;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import recurrent.jpa.phw_vac.Gestor_PrecuentasJpa;
-import recurrent.jpa.phw_vac.Gestor_PrecuentasJpaImpl;
+import recurrent.domain.Gestor_PrecuentasJpa;
+import recurrent.application.Gestor_PrecuentasJpaImpl;
 
 import javax.persistence.EntityManager;
 
@@ -41,7 +41,7 @@ class Gestor_PrecuentasJpaImplTest {
 
     @Test
     public void findByByClienteFicticioAndEstadoReg() {
-        Gestor_Precuentas result = gestor_precuentasJpa.findByByClienteFicticioAndEstadoReg(976976606, "PENDIENTE");
+        Gestor_Precuentas result = gestor_precuentasJpa.findByClienteFicticioAndEstadoReg(976976606, "PENDIENTE");
         assertThat(result).isNotNull();
     }
 

@@ -1,5 +1,8 @@
 package mercado.candidato.application;
 
+import automation.factory.Logger;
+import automation.factory.xlsx.Excel;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,16 +11,21 @@ import java.util.List;
  */
 public class ExecuteMercadoCandidato {
 
+    private static Logger LOG = Logger.getLogger(ExecuteMercadoCandidato.class);
+
     /**
      * Previa a la ejecución del proceso se deben tener en cuenta que deben existir en el directorio resources los siguientes ficheros actualizados:
      * 1. actividades_a_excluir.txt (Solicitar a Rubén Coll el último actualizado)
      * 2. email_hunter.csv (Solicitar a Juan Blasco el último actualizado)
      * 3. ultima_visita.csv (Solicitar a Javier Muñoz el último actualizado) => \\ph.inet\datos\pce\EDWIN\CLICKS acum.csv
+     *
      * @param arg
      */
     public static void main(String[] arg) {
         MercadoCandidato mercadoCandidato = new MercadoCandidato();
         execution(10, mercadoCandidato, mercadoCandidato.FILENAME_BIPA);
+//        combineFiles();
+//        combineSheets();
     }
 
     public static void execution(int threadNumber, MercadoCandidato mercadoCandidato, String fileName) {
@@ -29,11 +37,11 @@ public class ExecuteMercadoCandidato {
         }
     }
 
-    public static void setUp(MercadoCandidato mercadoCandidato, List<List<Integer>> clientCodes){
+    public static void setUp(MercadoCandidato mercadoCandidato, List<List<Integer>> clientCodes) {
         List<MercadoCandidatoThread> hilos = new ArrayList<>();
         for (int i = 0; i < clientCodes.size(); i++) {
             MercadoCandidatoThread hilo = new MercadoCandidatoThread(" Hilo" + (i + 1));
-            hilo.instancePatameters(mercadoCandidato.PATH + "mercado-candidato/", mercadoCandidato.FILENAME_MERCADO_CANDIDATO+ (i + 1) + mercadoCandidato.EXTENSION);
+            hilo.instancePatameters(mercadoCandidato.PATH + "mercado-candidato/", mercadoCandidato.FILENAME_MERCADO_CANDIDATO + (i + 1) + mercadoCandidato.EXTENSION);
             hilo.instancePhysycalResource(mercadoCandidato.getMapaEmailHunter(), mercadoCandidato.getActividadesExcluir(), mercadoCandidato.getMapaVisitas());
             hilo.instanceOracleProjection(
                     mercadoCandidato.getF_datos_contactoProjection(),
@@ -67,5 +75,20 @@ public class ExecuteMercadoCandidato {
             hilos.add(hilo);
         }
         hilos.forEach(Thread::start);
+    }
+
+    public static void combineFiles() {
+        LOG.info("Inicio de la combinación de los ficheros MERCADO_CANDIDATO_X...");
+        String path = "C:/tasks/mercado-candidato/src/main/resources/mercado-candidato/";
+        Excel.mergeExcelDocuments(path, "MERCADO_CANDIDATO_", "MERCADO_CANDIDATO.xlsx");
+        LOG.info("Final de la combinación de los ficheros MERCADO_CANDIDATO_X.");
+    }
+
+    private static void combineSheets() {
+        LOG.info("Inicio de la combinación de las hojas del fichero MERCADO_CANDIDATO_X...");
+        String path = "C:/tasks/mercado-candidato/src/main/resources/mercado-candidato/";
+        Excel.combineSheets(path, "MERCADO_CANDIDATO.xlsx", "MERCADO_CANDIDATO_DEST.xlsx");
+        LOG.info("Final de la combinación de las hojas del fichero MERCADO_CANDIDATO_X.");
+
     }
 }

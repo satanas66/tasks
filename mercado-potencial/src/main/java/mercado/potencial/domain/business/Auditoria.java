@@ -70,4 +70,28 @@ public class Auditoria {
         result.add(getTipo_operacion());
         return result;
     }
+
+    private String fe_creacion_s;
+
+    private String fe_modificacion_s;
+
+    public String getFe_creacion_s() {
+        return fe_creacion_s;
+    }
+
+    public void setFe_creacion_s(String fe_creacion_s) {
+        this.fe_creacion_s = fe_creacion_s;
+    }
+
+    public String getFe_modificacion_s() {
+        return fe_modificacion_s;
+    }
+
+    public void setFe_modificacion_s(String fe_modificacion_s) {
+        this.fe_modificacion_s = fe_modificacion_s;
+    }
+
+    public String auditoriaValue(){
+        return getCo_cliente()+";"+getFe_creacion_s()+";"+getFe_modificacion_s()+";"+getOrigen_dato()+";"+getTipo_operacion();
+    }
 }

@@ -5,6 +5,8 @@ import automation.factory.Logger;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -144,6 +146,30 @@ public class ConnectionJpa {
             LOG.error(ERROR + "BDCL1P: " + e.getMessage());
         }
         return entityManager;
+    }
+
+    /**
+     * Método que genera una conexión a una base de datos
+     * @param driver
+     * @param dbType
+     * @param host
+     * @param port
+     * @param schema
+     * @param user
+     * @param password
+     * @return conexión a BD
+     */
+    public Connection jd(String driver, String dbType, String host, String port, String schema, String user, String password) {
+        Connection connection = null;
+        try {
+            LOG.info("Abriendo conexión "+dbType+"...");
+            Class.forName(driver).newInstance();
+            connection = DriverManager.getConnection(dbType+":@//"+host+":"+port+"/"+schema, user, password);
+            LOG.info("Se ha establecido la conexión "+dbType+" correctamente...");
+        } catch (Exception e) {
+            LOG.error("Ha ocurrido un error creando la conexión: " + e.getMessage());
+        }
+        return connection;
     }
 
     public String getPHW_VAC() {

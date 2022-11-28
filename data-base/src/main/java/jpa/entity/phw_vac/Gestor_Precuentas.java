@@ -37,4 +37,17 @@ public class Gestor_Precuentas {
     private String txObservacion;
 
     @Column(name = "TX_ERROR")
-    private String txError;}
+    private String txError;
+
+    @Column(name = "NOMBRE")
+    private String nombre;
+
+    @Column(name = "DIRECCION_NO_NORMALIZADA")
+    private String direccion_no_normalizada;
+
+    @Column(name = "CO_ACTVAD")
+    private String co_actvad;
+
+    @Column(name = "TX_ACTVAD_NO_NORMALIZADA")
+    private String tx_actvad_no_normalizada;
+}

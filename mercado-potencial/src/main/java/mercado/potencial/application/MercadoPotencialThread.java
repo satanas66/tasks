@@ -4,6 +4,7 @@ import automation.factory.Logger;
 import automation.factory.Utils;
 import automation.factory.txt.Text;
 import automation.factory.xlsx.Excel;
+import com.mongodb.BasicDBList;
 import mercado.potencial.domain.business.*;
 import mercado.potencial.domain.mapper.*;
 import mercado.potencial.jpa.gestford.Tsf_AccountProjection;
@@ -75,7 +76,9 @@ public class MercadoPotencialThread extends Thread {
 
     private List<Integer> clientCodesInValid;
 
+    private BasicDBList kpiseg400;
 
+    private BasicDBList kpiseg401;
 
     public MercadoPotencialThread(String nombreHilo) {
         super(nombreHilo);
@@ -94,6 +97,8 @@ public class MercadoPotencialThread extends Thread {
         this.mapaEmailHunter = mapaEmailHunter;
         this.actividadesExcluir = actividadesExcluir;
     }
+
+
 
     public void instanceListClientCodes(List<Integer> clientCodes) {
         this.clientCodes = clientCodes;
@@ -138,18 +143,14 @@ public class MercadoPotencialThread extends Thread {
         this.bi_recomendatorProjection = bi_recomendatorProjection;
     }
 
+    public void instaceBasicBDLists(BasicDBList kpiseg400, BasicDBList kpiseg401){
+        this.kpiseg400 = kpiseg400;
+        this.kpiseg401 = kpiseg401;
+    }
+
     @Override
     public void run() {
         constructProjection();
-        int i=0;
-        while(clientCodesInValid.size() > 0){
-            clientCodes = clientCodesInValid;
-            constructProjection();
-            i++;
-            if(i==3){
-                break;
-            }
-        }
     }
 
     private void constructProjection() {
@@ -179,7 +180,6 @@ public class MercadoPotencialThread extends Thread {
                         datosContacto.setDi_url(di_url);
                         String impago = f_impagoProjection.findImpagoValue(clientCode);
                         datosContacto.setImpago(impago);
-                        datosContacto.setPersona_contacto("");//Valor aún por buscar
                         String co_sector = tsi_actvadProjection.findSectorCodeFromTsiActvad(datosContacto.getCo_actvad_pral());
                         List<Object[]> tsiSectorValues = tsi_sectorProjection.getProjectionsFromTsi_SectorToMuestraMadreByCoSector(co_sector);
                         datosContacto = datosContactoMapper.getDatosContactoFromTsiSectorProjection(datosContacto, tsiSectorValues);
@@ -211,14 +211,13 @@ public class MercadoPotencialThread extends Thread {
                         Object[] gestorOportunidadesValues = gestor_oportunidadesProjection.findProjectionEGestorOportunidades(clientCode);
                         analiticaWeb = analiticaWebMapper.setZoomFromGestorOportunidadesProjection(analiticaWeb, gestorOportunidadesValues);
 
-                        Object[] webVisibilityAnalyticsValues = webVisibilityAnalyticsProjection.getProjectionFromWebVisibilityAnalytics(String.valueOf(clientCode));
+                        Object[] webVisibilityAnalyticsValues = webVisibilityAnalyticsProjection.getProjectionFromWebVisibilityAnalyticsAux(String.valueOf(clientCode), kpiseg400, kpiseg401);
                         datosContacto = datosContactoMapper.setDomainFromWeVisibilityAnalyticsProjection(datosContacto, webVisibilityAnalyticsValues);
                         historicoSalesforce = historicoSalesforceMapper.setListingVersionFromWeVisibilityAnalyticsProjection(historicoSalesforce, webVisibilityAnalyticsValues);
                         analiticaWeb = analiticaWebMapper.setWebVisibilityAnalyticsProjection(analiticaWeb, webVisibilityAnalyticsValues);
                         /********** SEO **********/
                         SeoMapper seoMapper = new SeoMapper();
-                        Seo seo = new Seo();
-                        seo = seoMapper.setWebVisibilityAnalyticsProjection(seo, webVisibilityAnalyticsValues);
+                        Seo seo = seoMapper.setWebVisibilityAnalyticsProjection(new Seo(), webVisibilityAnalyticsValues);
                         /********** Posicionamiento en buscadores **********/
                         PosicinamientoBuscadoresMapper posicinamientoBuscadoresMapper = new PosicinamientoBuscadoresMapper();
                         PosicionamientoBuscadores posicionamientoBuscadores = new PosicionamientoBuscadores();
@@ -233,9 +232,13 @@ public class MercadoPotencialThread extends Thread {
                         Recomendador recomendador = new Recomendador();
                         recomendador.setPaquete_recomendado(paquete_recomendado);
                         /********** Auditoria **********/
-                        AuditoriaMapper auditoriaMapper = new AuditoriaMapper();
-                        Object[] auditProjection = mapaAuditoria.get(clientCode);
-                        Auditoria auditoria = auditoriaMapper.setAuditoriaProjection(new Auditoria(), auditProjection);
+//                        AuditoriaMapper auditoriaMapper = new AuditoriaMapper();
+//                        Object[] auditProjection = mapaAuditoria.get(clientCode);
+//                        Auditoria auditoria = auditoriaMapper.setAuditoriaProjection(new Auditoria(), auditProjection);
+
+                        /********** Presencia Digital **********/
+                        PresenciaDigitalMapper presenciaDigitalMapper = new PresenciaDigitalMapper();
+                        PresenciaDigital presenciaDigital = presenciaDigitalMapper.getPresenciaDigitalFromWebVisibilityAnalyticsProjection(new PresenciaDigital(), webVisibilityAnalyticsValues);
 
                         List<Object> kpisValues = datosContacto.getKpisDatosContacto();
                         kpisValues.addAll(historicoSalesforce.getKpisHistoricoSalesforce());
@@ -245,11 +248,12 @@ public class MercadoPotencialThread extends Thread {
                         kpisValues.addAll(posicionamientoBuscadores.getKpisPosicionamientoBuscadores());
                         kpisValues.addAll(perfilGmb.getKpisPerfilGmb());
                         kpisValues.addAll(recomendador.getKpisRecomendador());
-                        kpisValues.addAll(auditoria.getKpisAuditoria());
+//                        kpisValues.addAll(auditoria.getKpisAuditoria());
+                        kpisValues.addAll(presenciaDigital.getKpisPresenciaDigital());
                         total.add(kpisValues);
 
                         i++;
-                        if (i == 100) {
+                        if (i == 1000) {
                             LOG.info("Escribiendo " + i + " registros...");
                             Excel.writeKPIsAllValues(path, nameFile, total, getKPIsMuestraMadre());
                             LOG.info("Registros escritos correctamente");
@@ -300,7 +304,12 @@ public class MercadoPotencialThread extends Thread {
                 "POSITION_KW_6", "KEYWORD_7", "POSITION_KW_7", "KEYWORD_8", "POSITION_KW_8",
                 "KEYWORD_9", "POSITION_KW_9", "KEYWORD_10", "POSITION_KW_10", "RANKING_NUMBER",
                 "PAGE_URL", "NOMBRE_GOOGLE", "REVIEWS", "TOTAL_RATING", "CLAIM_BUSINESS",
-                "TIMESTAMP", "PAQUETE_RECOMENDADO",
-                "CO_CLIENTE", "FE_CRACION", "FE_MODIFICACION", "ORIGEN_DATOS", "TIPO_OPERACION");
+                "TIMESTAMP", "ACTVAD_GMB", "PAQUETE_RECOMENDADO",
+                "INDICE_PRESENCIA", "CLAIM_BUSINESS", "REVIEWS", "APARECER_PRIMERA_PAG", "RANNKING_NUMBER",
+                "KEYWORD_TOP10", "ERRORES_GRAVES", "ENLACES_ROTOS", "NO_SITEMAP", "NO_ROBOTS", "SITIO_NO_SEGURO",
+                "ERRORES_ALT", "ERRORES_TITLE", "POCO_CONTENIDO", "ERRORES_INDEX", "NO_RESPONSIVE", ">5S_CARGA_MOVIL",
+                "INDICE_COMPETENCIA");
+//                ,
+//                "CO_CLIENTE", "FE_CRACION", "FE_MODIFICACION", "ORIGEN_DATOS", "TIPO_OPERACION");
     }
 }

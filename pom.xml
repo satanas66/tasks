@@ -19,6 +19,10 @@
         <module>recurrent</module>
         <module>source-audit</module>
         <module>mercado-no-web-analytics</module>
+        <module>potential-market</module>
+        <module>precuentas</module>
+        <module>mercado-potencial-mongo</module>
+        <module>mercado-potencial-jpa</module>
     </modules>
 
     <properties>

@@ -107,7 +107,7 @@ public class URLsMarketgoo {
     public void mongoStart() {
         if (continuaProceso) {
             LOG.info("Abriendo conexión a MONGODB");
-            connectionMongo = new ConnectionMongo("PRO");
+            connectionMongo = new ConnectionMongo();
             if (connectionMongo.getMongoClient() != null) {
                 webVisibilityAnalyticsDbCollection = connectionMongo.getDBCollection("webVisibilityAnalytics");
                 scrappingDbCollection = connectionMongo.getDBCollection("scrapping");

@@ -41,7 +41,7 @@ public class Recomendador {
     public void noRelationalDBStart() {
         if (continuaProceso) {
             LOG.info("Abriendo conexión a MONGODB");
-            connectionMongo = new ConnectionMongo("PRO");
+            connectionMongo = new ConnectionMongo();
             if (connectionMongo.getMongoClient() != null) {
                 webVisibilityAnalyticsDbCollection = connectionMongo.getDBCollection("webVisibilityAnalytics");
             } else {
@@ -85,7 +85,7 @@ public class Recomendador {
      * @return lista de lista de códigos de clientes
      */
     public List<List<String>> listsForExecutionByThreads(int numberOfDivisions) {
-        List<String> clientCodes = Utils.generateListFromFile(PATH, "20220916.txt");
+        List<String> clientCodes = Utils.generateListFromFile(PATH, "20221007.txt");
         Collections.sort(clientCodes);
         return Utils.getListDivision(clientCodes, numberOfDivisions);
     }
